@@ -1,0 +1,29 @@
+
+.flex-container {
+    display: flex;
+    padding: 25px;
+    background-image: url('bg4.png');
+    background-size: cover; /* adjust this property as needed */
+    background-repeat: no-repeat; /* optional: prevents the background image from repeating */
+    
+}
+
+.flex-child {
+    flex: 1;
+    
+}  
+.magenta{
+    border: 2px solid green; 
+
+}
+.green{
+    border: 2px solid rgb(250, 110, 110); 
+}
+
+.flex-child:first-child {
+    margin-right: 10px;
+} 
+
+
+
+
