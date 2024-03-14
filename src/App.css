@@ -236,6 +236,13 @@ color: white;
   justify-content: center;
   font-size: 3rem;
 }
+.Highl{
+  background-color: #8cf35d;
+}
+
+.Lowl{
+  background-color:#fc7266;
+}
 
 
 

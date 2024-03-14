@@ -11,6 +11,7 @@ import Alart from './components/Alart';
 import { Link } from "react-router-dom";
 
 
+
 let prevTime = 24;
 let prevTimeOld = 24;
 let timeCount = 0;
@@ -191,9 +192,6 @@ if (isSolarFailure(solarValue)) {
 }, [caldate, selectedItem] || [])
 
   
-
-  
-
     const fetchdata = () => {
         var mail = `${selectedItem}`
         
@@ -232,8 +230,11 @@ if (isSolarFailure(solarValue)) {
             .catch((error) => {
                 console.error('Error fetching data:', error);
             });
+
+            
       
     }
+    
 
 
 
@@ -547,6 +548,8 @@ if (isSolarFailure(solarValue)) {
 
         })
 
+        
+
         //clock
         const [time, setTime] = useState(getCurrentTime());
 
@@ -600,6 +603,44 @@ if (isSolarFailure(solarValue)) {
           }, [p1ValueTot, p2ValueTot, p3ValueTot,showAlart]);
 
 
+      //-------------------card color-------------------------------------
+    
+          // Effect to update the color when solarVoltage changes
+          const [cardSolarVoltage, setcardSolarVoltage] = useState('card');
+          const [cardSolarCurrent, setcardSolarCurrent] = useState('card');
+          const [cardInverterVoltage, setcardInverterVoltage] = useState('card');
+          const [cardInverterCurrent, setcardInverterCurrent] = useState('card');
+          const [cardGridVoltage, setcardGridVoltage] = useState('card');
+          const [cardGridCurrent, setcardGridCurrent] = useState('card');
+          const [cardBatteryVoltage, setcardBatteryVoltage] = useState('card');
+        
+
+    useEffect(() => {
+        // Update the class name based on solarVoltage
+        const ClassSolarVoltage = solarVoltage > 0 ? 'card Highl' : 'card Lowl';
+        const ClassSolarCurrent = solarCurrent > 0 ? 'card Highl' : 'card Lowl';
+        const ClassInverterVoltage = inverterVoltage > 180 ? 'card Highl' : 'card Lowl';
+        const ClassInverterCurrent = inverterCurrent > 0 ? 'card Highl' : 'card Lowl';
+        const ClassGridVoltage = gridVoltage > 160 ? 'card Highl' : 'card Lowl';
+        const ClassGridCurrent = gridCurrent > 0 ? 'card Highl' : 'card Lowl';
+        const ClassBatteryVoltage = batteryVoltage > 22 ? 'card Highl' : 'card Lowl';
+
+
+        setcardSolarVoltage(ClassSolarVoltage);
+        setcardSolarCurrent(ClassSolarCurrent);
+        setcardInverterVoltage(ClassInverterVoltage);
+        setcardInverterCurrent(ClassInverterCurrent);
+        setcardGridVoltage(ClassGridVoltage);
+        setcardGridCurrent(ClassGridCurrent);
+        setcardBatteryVoltage(ClassBatteryVoltage);
+
+    }, [solarVoltage,solarCurrent,inverterVoltage,inverterCurrent,gridVoltage,gridCurrent,batteryVoltage]);
+     
+
+          
+          
+
+
   
 
     return (
@@ -621,7 +662,7 @@ if (isSolarFailure(solarValue)) {
                 {/* <button onClick={toggleSidebar} style={{color: "white",width:120,fontSize:18}}>
                     <i className="fa-solid fa-list" style={{padding:"3px"}}></i>Devices</button> */}
 
-                    <Link to="/Map">
+                    <Link to="https://maps.re4billion.ai/">
                     <button type="button" class="btn btn-info" style={{width:'100px'}}><i class="fa-solid fa-location-dot" style={{padding:'4px'}}></i>Location</button>
                     </Link>
 
@@ -667,40 +708,43 @@ if (isSolarFailure(solarValue)) {
 
             {/* Card section */}
             <div className={`content ${sidebarOpen ? 'shifted' : ''}`}>
+
+                
             <Alart alart={alart} InverterCheck={InverterCheck} BatteryCheck={BatteryCheck} SolarCheck={SolarCheck} />
 
                 <div className="wrapper">
-                    <div className="card">
+
+                    <div className={cardSolarVoltage}>
                         <h2 className="card_title">Solar Voltage</h2>
                         <h3 className="card_value">{solarVoltage} V</h3>
                     </div>
 
-                    <div className="card">
+                    <div className={cardSolarCurrent}>
                         <h2 className="card_title">Solar Current</h2>
                         <h3 className="card_value">{solarCurrent} A</h3>
                     </div>
 
-                    <div className="card">
+                    <div className={cardInverterVoltage}>
                         <h2 className="card_title">Inverter Voltage</h2>
                         <h3 className="card_value">{inverterVoltage} V</h3>
                     </div>
 
-                    <div className="card">
+                    <div className={cardInverterCurrent}>
                         <h2 className="card_title">Inverter Current</h2>
                         <h3 className="card_value">{inverterCurrent} A</h3>
                     </div>
 
-                    <div className="card">
+                    <div className={cardGridVoltage}>
                         <h2 className="card_title">Grid Voltage</h2>
                         <h3 className="card_value">{gridVoltage} V</h3>
                     </div>
 
-                    <div className="card">
+                    <div className={cardGridCurrent}>
                         <h2 className="card_title">Grid Current</h2>
                         <h3 className="card_value">{gridCurrent} A</h3>
                     </div>
 
-                    <div className="card">
+                    <div className={cardBatteryVoltage}>
                         <h2 className="card_title">Battery Voltage</h2>
                         <h3 className="card_value">{batteryVoltage} V</h3>
                     </div>
