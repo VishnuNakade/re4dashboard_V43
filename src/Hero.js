@@ -71,7 +71,7 @@ const Hero = ({ handleLogout}) => {
     var dd1 = dateOrg.split('-');
 
     const [caldate, setCalDate] = useState(dateOrg);
-    const [dateColor, setDateColor] = useState('green');
+    const [dateColor, setDateColor] = useState('#8cf35d');
     
     // console.log(caldate)
 
@@ -272,9 +272,9 @@ if (isSolarFailure(solarValue)) {
 
                 // Check conditions and update color after data fetching
                 if (p1ValueTot === 0 && p2ValueTot === 0 && p3ValueTot === 0) {
-                    setDateColor('red');
+                    setDateColor('#fc7266');
                 } else {
-                    setDateColor('green');
+                    setDateColor('#8cf35d');
                 }
 
             })
@@ -650,40 +650,39 @@ if (isSolarFailure(solarValue)) {
             <nav style={{ justifyContent:"space-between" }}>
 
                     {/* <h2>Welcome</h2> */}
-                <img style={{ width: 190, height: 60 }} src={reImg} alt="re4billion" />
+                {/* <img style={{ width: 190, height: 60 }} src={reImg} alt="re4billion" />
 
                 <Link to="/">
-                <button type="button" class="btn btn-primary" style={{width:'100px'}}><i class="fa-solid fa-bars-progress" style={{padding:'4px'}}></i>Status</button>
+                <button type="button" className="btn btn-primary" style={{width:'100px'}}><i className="fa-solid fa-bars-progress" style={{padding:'4px'}}></i>Status</button>
                 </Link>
                 
 
-                <button type="button" class="btn btn-success" onClick={toggleSidebar} style={{width:'100px'}}><i className="fa-solid fa-list" style={{padding:'4px'}}></i>Devices</button>
+                <button type="button" className="btn btn-success" onClick={toggleSidebar} style={{width:'100px'}}><i className="fa-solid fa-list" style={{padding:'4px'}}></i>Devices</button>
 
-                {/* <button onClick={toggleSidebar} style={{color: "white",width:120,fontSize:18}}>
-                    <i className="fa-solid fa-list" style={{padding:"3px"}}></i>Devices</button> */}
+               
 
                     <Link to="https://maps.re4billion.ai/">
-                    <button type="button" class="btn btn-info" style={{width:'100px'}}><i class="fa-solid fa-location-dot" style={{padding:'4px'}}></i>Location</button>
+                    <button type="button" className="btn btn-info" style={{width:'100px'}}><i className="fa-solid fa-location-dot" style={{padding:'4px'}}></i>Location</button>
                     </Link>
 
-<button type="button" class="btn btn-danger"onClick={handleLogout}style={{width:'100px'}}><i className="fa-solid fa-right-from-bracket" style={{padding:"4px"}}></i>Logout</button>
+<button type="button" className="btn btn-danger"onClick={handleLogout}style={{width:'100px'}}><i className="fa-solid fa-right-from-bracket" style={{padding:"4px"}}></i>Logout</button>
 
-<button type="button" class="btn btn-warning" style={{width:'107px',backgroundColor:'#FFBF00'}}> 
+<button type="button" className="btn btn-warning" style={{width:'107px',backgroundColor:'#FFBF00'}}> 
 <div id="txt">
-<i class="fa-solid fa-clock" style={{padding:'4px'}}></i>
+<i className="fa-solid fa-clock" style={{padding:'4px'}}></i>
       {time}
     </div>
-</button>
+</button> */}
 
 
 
-                {/* <button style={{ color: "white",marginRight:"-350px",fontSize:18,width:120}} onClick={handleLogout}><i className="fa-solid fa-right-from-bracket" style={{padding:"3px",color:"#f94b3e"}}></i>Logout</button> */}
+                
 
                 <div className="App">
                     {/* Sidebar */}
                     <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
                         <ul>
-                            <li style={{backgroundColor:'DodgerBlue',color:'black',fontSize:'26px'}}><i className="fa-solid fa-microchip" style={{padding:"5px"}}></i>Devices</li>
+                            <li style={{backgroundColor:'DodgerBlue',color:'black',fontSize:'23px'}}><i className="fa-solid fa-microchip" style={{padding:"5px"}}></i>Devices</li>
                             <li style={{ backgroundColor: selectedItem === 'ftb001' ? 'Orange' : '' }} onClick={() => handleMenuItemClick('ftb001')}>ftb001-Kollar</li>
                             <li style={{ backgroundColor: selectedItem === 'stb001' ? 'red' : '' }}  onClick={() => handleMenuItemClick('stb001')}>stb001-Modiyur</li>
                             <li style={{ backgroundColor: selectedItem === 'nrmsv2f001' ? 'DodgerBlue' : '' }} onClick={() => handleMenuItemClick('nrmsv2f001')}>nrmsv2f001-Ananthapuram</li>
@@ -708,6 +707,54 @@ if (isSolarFailure(solarValue)) {
 
             {/* Card section */}
             <div className={`content ${sidebarOpen ? 'shifted' : ''}`}>
+
+            <nav className="navbar navbar-expand-lg navbar-light bg-info stickyTop">
+  <a className="navbar-brand text-white" href="#">Dashboard</a>
+  <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span className="navbar-toggler-icon"></span>
+  </button>
+
+  <div className="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul className="navbar-nav mr-auto menu3">
+    <li className="nav-item active">
+        <Link className="nav-link text-white" to="https://re4billion.ai/">Home<span className="sr-only">(current)</span></Link>
+      </li>
+    <li className="nav-item active">
+        <Link className="nav-link text-white" onClick={toggleSidebar}>Devices<span className="sr-only">(current)</span></Link>
+      </li>
+      <li className="nav-item active">
+        <Link className="nav-link text-white" to="/">Status<span className="sr-only">(current)</span></Link>
+      </li>
+  
+      <li className="nav-item active">
+        <Link className="nav-link text-white" to="https://maps.re4billion.ai/" >Location<span className="sr-only">(current)</span></Link>
+      </li>
+     
+    
+      {/* <li className="nav-item dropdown">
+        <a className="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown
+        </a>
+        <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a className="dropdown-item" href="#">Action</a>
+          <a className="dropdown-item" href="#">Another action</a>
+          <div className="dropdown-divider"></div>
+          <a className="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li> */}
+    
+    </ul>
+   
+    <ul className="navbar-nav ml-auto"> 
+      <li className="nav-item active">
+        <Link className="nav-link text-white" onClick={handleLogout}>Logout<span className="sr-only">(current)</span></Link>
+      </li>
+    </ul>
+    
+  </div>
+</nav>
+<hr style={{ margin: '3px 0', borderTop: '0.5px solid rgba(0, 0, 0, 0.1)', backgroundColor: 'white' }} />
+
 
                 
             <Alart alart={alart} InverterCheck={InverterCheck} BatteryCheck={BatteryCheck} SolarCheck={SolarCheck} />
@@ -767,6 +814,7 @@ if (isSolarFailure(solarValue)) {
                         <h3 className="card_value">{(p3ValueTot / 1000).toFixed(2)} kWh</h3>
                     </div>
                 </div>
+                <hr style={{ margin: '3px 0', borderTop: '0.5px solid rgba(0, 0, 0, 0.1)', backgroundColor: 'white' }} />
 
                 <div className="calenderPlace">
             <input 

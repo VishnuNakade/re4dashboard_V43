@@ -1,7 +1,12 @@
+#email-containers{
+    padding-top: 50px;
+}
+
+
 
 .flex-container {
     display: flex;
-    padding: 25px;
+    padding: 50px;
     background-image: url('bg4.png');
     background-size: cover; /* adjust this property as needed */
     background-repeat: no-repeat; /* optional: prevents the background image from repeating */

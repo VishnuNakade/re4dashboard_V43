@@ -17,14 +17,14 @@ export default function Alart(props) {
   
 
   return (
-  <div style={{ height: '50px' }}>
+  <div style={{ height: '50px',padding:'3px'}}>
     {props.alart && (
       <div className={`alert alert-${props.alart.type} alert-dismissible fade show`} role="alert">
         {props.alart.type === 'success' ? (
          <>
           <i className="fa-solid fa-circle-check" style={{ color: '#217a00',padding:'5px' }}></i>
 
-          <i className="fa-solid fa-circle-info float-right" style={{ fontSize: '25px', cursor: 'pointer',color:'DodgerBlue' }} onClick={handleShow}></i>
+          <i className="fa-solid fa-circle-info float-right" style={{ fontSize: '20px', cursor: 'pointer',color:'DodgerBlue',paddingTop:'4px' }} onClick={handleShow}></i>
          </>
         ) : (
           <i className="fa-solid fa-triangle-exclamation" style={{ color: '#f31616',padding:'5px' }}></i>
