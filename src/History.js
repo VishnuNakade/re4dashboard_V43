@@ -51,7 +51,7 @@ let iterVal = 0;
 
 
 
-const Alldevices = ({ handleLogout}) => {
+const History = ({ handleLogout}) => {
     const [data, setdata] = useState([])
     const [timeValueArray, setTimeValueArray] = useState([])
     const [solarVoltageArray, setSolarVoltageArray] = useState([])
@@ -135,7 +135,7 @@ const Alldevices = ({ handleLogout}) => {
 
   useEffect(() => {
     // handleMenuItemClick();
-    // fetchdata();
+    fetchdata();
     fetchdatafull();
 }, [caldate, selectedItem] || [])
 
@@ -143,94 +143,32 @@ const Alldevices = ({ handleLogout}) => {
 
   
 
-const fetchdatafull = () => {
-    const mail = ["ftb001", "stb001", "nrmsv2f001", "rmsv3_001","rmsv3_002","rmsv32_001","rmsv33_001","rmsv33_002"];
-    let currentTimestamp = Math.floor(Date.now() / 1000);
-
-    if (caldate) {
-        currentTimestamp = Math.floor(new Date(caldate).getTime() / 1000);
-    }
-
-    const timestamp24HoursAgo = currentTimestamp - (24 * 60 * 60);
-
+const fetchdata = () => {
+    const mail = ["ftb001", "ftb002", "stb001", "nrmsv2"];
     mail.forEach(email => {
-        // Fetch All Data
-        const databaseRefFull = ref(db, `data/${email}/timestamp`);
-        const queryRefFull = query(databaseRefFull, orderByKey(), startAt("" + timestamp24HoursAgo));
-
-        get(queryRefFull)
+        const databaseRef = ref(db, `data/${email}/latestValues`);
+        get(databaseRef)
             .then((snapshot) => {
-                const recordFull = [];
-                let k = 0;
-                snapshot.forEach((childSnapshot) => {
-                    if (email === "ftb001" && childSnapshot.key > 1663660000) {
-                        k = 5400;
-                    }
-                    const uniValue = parseInt((new Date(caldate).getTime() / 1000).toFixed(0)) - 19800;
-                    if (childSnapshot.key > uniValue - k && childSnapshot.key < uniValue + 86400 - k) {
-                        recordFull.push(childSnapshot);
-                    }
-                });
+                const record = snapshot.val();
 
-                // Create a div element for each email's data
-                const divFull = document.createElement('div');
-                divFull.classList.add('email-data');
+                // Create a div element for each email
+                const div = document.createElement('div');
+                div.classList.add('email-data');
 
                 // Update the content of the div with the email's data
-                divFull.innerHTML = `
-                    <h3><i class="fa-solid fa-microchip" style="padding:7px"></i> ${email}</h3>
-                   
+                div.innerHTML = `
+                    <h3>Email: ${email}</h3>
+                    <p>Solar Voltage: ${record.solarVoltage.toFixed(2)}</p>
+                    <p>Solar Current: ${record.solarCurrent.toFixed(2)}</p>
+                    <p>Inverter Voltage: ${record.inverterVoltage.toFixed(2)}</p>
+                    <p>Inverter Current: ${record.inverterCurrent.toFixed(2)}</p>
+                    <p>Grid Voltage: ${record.gridVoltage.toFixed(2)}</p>
+                    <p>Grid Current: ${record.gridCurrent.toFixed(2)}</p>
+                    <p>Battery Voltage: ${record.batteryVoltage.toFixed(2)}</p>
                 `;
-                // <p style="padding:7px"> Status: ${recordFull.length > 0 ? 'Working' : 'Not Working'}</p>
-                if (recordFull.length > 0) {
-                    divFull.className = 'border border-success';
 
-                    // Fetch Latest Values Data only if recordFull length is not zero
-                    const databaseRef = ref(db, `data/${email}/latestValues`);
-                    return get(databaseRef)
-                        .then((snapshot) => {
-                            const record = snapshot.val();
-
-                            // Construct additional data HTML
-                            let additionalDataHTML = '';
-                           if (record.gridVoltage.toFixed(2) > 0) {
-    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block;background-color:#8cf35d;">Grid is available: ${record.gridVoltage.toFixed(2)}V</span>`;
-} else {
-    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block; background-color:#fc7266;">Grid is not available: ${record.gridVoltage.toFixed(2)}V</span>`;
-}
-
-if (record.batteryVoltage.toFixed(2) > 22) {
-    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block; background-color:#8cf35d;">Battery works properly: ${record.batteryVoltage.toFixed(2)}V</span>`;
-} else {
-    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block;
-    background-color:#fc7266;">Battery low: ${record.batteryVoltage.toFixed(2)}V</span>`;
-}
-
-additionalDataHTML += "<br>"; // Add line break after two paragraphs
-
-if (record.inverterCurrent.toFixed(2) > 4.5) {
-    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block;
-    background-color:#fc7266;">System is overloaded: ${record.inverterCurrent.toFixed(2)}V</span>`;
-} else {
-    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block;
-    background-color:#8cf35d;">System works properly: ${record.inverterCurrent.toFixed(2)}V</span>`;
-}
-
-                            
-                            
-
-                            // Append additional data to divFull
-                            divFull.innerHTML += additionalDataHTML;
-
-                            document.getElementById('Working').appendChild(divFull); // Append to 'Working' container
-                        })
-                        .catch((error) => {
-                            console.error(`Error fetching data for ${email}:`, error);
-                        });
-                } else {
-                    divFull.className = 'border border-danger';
-                    document.getElementById('notWorking').appendChild(divFull); // Append to 'notWorking' container
-                }
+                // Append the div to a container in the HTML document
+                document.getElementById('data-container').appendChild(div);
             })
             .catch((error) => {
                 console.error(`Error fetching data for ${email}:`, error);
@@ -241,9 +179,58 @@ if (record.inverterCurrent.toFixed(2) > 4.5) {
 
 
 
+const fetchdatafull = () => {
+    const mail = ["ftb001", "stb001", "nrmsv2f001", "rmsv3_001", "rmsv3_002", "rmsv32_001", "rmsv33_001", "rmsv33_002","rmsv4_001"];
+    let currentTimestamp = Math.floor(Date.now() / 1000);
 
+    if (caldate) {
+        currentTimestamp = Math.floor(new Date(caldate).getTime() / 1000);
+    }
 
+    const timestamp24HoursAgo = currentTimestamp - (24 * 60 * 60);
 
+    mail.forEach(email => {
+        const databaseRef = ref(db, `data/${email}/timestamp`);
+        const queryRef = query(databaseRef, orderByKey(), startAt("" + timestamp24HoursAgo));
+
+        get(queryRef)
+            .then((snapshot) => {
+                const records = [];
+                snapshot.forEach((childSnapshot) => {
+                    records.push(childSnapshot);
+                });
+
+                // Sort records in descending order based on timestamp
+                records.sort((a, b) => b.key - a.key);
+
+                const lastRecord = records.length > 0 ? records[0] : null;
+                
+                // const lastdata= JSON.parse(JSON.stringify(lastRecord))
+                // // console.log(lastdata.tValue);
+                // const myDate = new Date((lastdata.tValue)* 1000);
+
+                // Create a div element for each email's data
+                const div = document.createElement('div');
+                div.classList.add('email-data');
+
+                // Update the content of the div with the email's data
+                div.innerHTML = `
+                    <h3>Email: ${email}</h3>
+                    <p>Data: ${JSON.stringify(lastRecord)}</p>
+                   
+                    <p>Status: ${lastRecord ? 'Working' : 'Not Working'}</p>
+                    
+                    
+                `;
+
+                // Append the div to the container in the HTML document
+                document.getElementById('email-container').appendChild(div);
+            })
+            .catch((error) => {
+                console.error(`Error fetching data for ${email}:`, error);
+            });
+    });
+};
 
   
 
@@ -490,25 +477,25 @@ if (record.inverterCurrent.toFixed(2) > 4.5) {
 
         //Alerts
 
-        useEffect(() => {
-            // Define a function to check conditions and show alerts
-            const checkAndShowAlerts = () => {
-              // Check conditions after data is fetched
-              if ((p1ValueTot / 1000) > 0 && (p3ValueTot / 1000) > 0) {
-                showAlart("This device is working", "success");
-              } else {
-                showAlart("This device is not working", "danger");
-              }
-            };
+        // useEffect(() => {
+        //     // Define a function to check conditions and show alerts
+        //     const checkAndShowAlerts = () => {
+        //       // Check conditions after data is fetched
+        //       if ((p1ValueTot / 1000) > 0 && (p3ValueTot / 1000) > 0) {
+        //         showAlart("This device is working", "success");
+        //       } else {
+        //         showAlart("This device is not working", "danger");
+        //       }
+        //     };
           
-            // Delay execution after 3000 milliseconds (3 seconds)
-            const delay = 320; // time in milliseconds
-            const timerId = setTimeout(checkAndShowAlerts, delay);
+        //     // Delay execution after 3000 milliseconds (3 seconds)
+        //     const delay = 320; // time in milliseconds
+        //     const timerId = setTimeout(checkAndShowAlerts, delay);
           
-            // Clean up the timer to avoid memory leaks
-            return () => clearTimeout(timerId);
+        //     // Clean up the timer to avoid memory leaks
+        //     return () => clearTimeout(timerId);
             
-          }, [p1ValueTot, p2ValueTot, p3ValueTot,showAlart]);
+        //   }, [p1ValueTot, p2ValueTot, p3ValueTot,showAlart]);
 
 
   
@@ -535,7 +522,7 @@ if (record.inverterCurrent.toFixed(2) > 4.5) {
    
     <ul className="navbar-nav ml-auto menu3"> 
       <li className="nav-item active">
-        <Link className="nav-link text-white" to="db" >Go to Dashboard<span className="sr-only">(current)</span></Link>
+        <Link className="nav-link text-white" to="/db" >Go to Dashboard<span className="sr-only">(current)</span></Link>
       </li>
     </ul>
     
@@ -544,27 +531,12 @@ if (record.inverterCurrent.toFixed(2) > 4.5) {
 <hr style={{ margin: '3px 0', borderTop: '0.5px solid rgba(0, 0, 0, 0.1)', backgroundColor: 'white' }} />
 
 
-<div id="email-containers">
-                <div className="flex-container">
-            
+<div id="email-container" style={{padding:'50px'}}></div>
 
-            <div className="flex-child magenta" id="Working" style={{padding:'8px'}}>
-                <h1><i class="fa-solid fa-circle-check" style={{color: 'green',padding:'7px'}}></i>Device are working</h1>
-               
-            </div>
-            
-            <div className="flex-child green" id="notWorking" style={{padding:'8px'}}>
-            <h1><i class="fa-solid fa-circle-xmark" style={{color:'red',padding:'7px'}}></i>Device are not working</h1>
-            
-            </div>
-            
-          </div>
-          <div id="data-container"></div>
-</div>
   </div>
 
 
     );
 };
 
-export default Alldevices;
+export default History;

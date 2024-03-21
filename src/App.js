@@ -12,6 +12,9 @@ import Loading from "./components/Loading";
 // Import your audio file
 import loginSound from './loginSound.mp3';
 import Alldevices from "./Alldevices";
+import History from "./History";
+import Data from "./Data";
+
 // import Maps from "./Maps"
 import {
   BrowserRouter as Router,
@@ -131,8 +134,9 @@ function App()  {
       ) : user ? (
         <Routes>
         <Route exact path="/" element={ <Alldevices/> }></Route>
-        {/* <Route exact path="/Map" element={ <Maps/> }></Route> */}
-        <Route exact path="db" element={<Hero handleLogout={handleLogout}  /> }></Route>
+        <Route exact path="/History" element={ <History/> }></Route>
+        <Route exact path="/Data" element={ <Data/> }></Route>
+        <Route exact path="/db" element={<Hero handleLogout={handleLogout}  /> }></Route>
         </Routes>
         //  showAlart={showAlart}
        

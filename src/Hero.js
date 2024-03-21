@@ -51,7 +51,7 @@ let iterVal = 0;
 
 
 
-const Hero = ({ handleLogout}) => {
+const Hero = ({ handleLogout }) => {
     const [data, setdata] = useState([])
     const [timeValueArray, setTimeValueArray] = useState([])
     const [solarVoltageArray, setSolarVoltageArray] = useState([])
@@ -62,6 +62,7 @@ const Hero = ({ handleLogout}) => {
     const [gridVoltage, setGridVoltage] = useState('')
     const [gridCurrent, setGridCurrent] = useState('')
     const [batteryVoltage, setBatteryVoltage] = useState('')
+    const [tValue, settValue] = useState('')
 
 
 
@@ -72,12 +73,12 @@ const Hero = ({ handleLogout}) => {
 
     const [caldate, setCalDate] = useState(dateOrg);
     const [dateColor, setDateColor] = useState('#8cf35d');
-    
+
     // console.log(caldate)
 
-    
+
     // Sidebar
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
     const [selectedItem, setSelectedItem] = useState('ftb001');
 
     const toggleSidebar = () => {
@@ -91,110 +92,155 @@ const Hero = ({ handleLogout}) => {
     //Sidebar end
 
 
-      //Alarts
-  const[alart,setAlart]=useState(null)
-  const showAlart=(message,type)=>{
-    setAlart({
-      msg:message,
-      type:type
-    })
-   // setTimeout(() => {
-    //   setAlart(null);
-    // },3000);
-  }
-
-  const [InverterCheck, setInverterCheck] = useState(null);
-  const [BatteryCheck, setBatteryCheck] = useState(null);
-  const [SolarCheck, setSolarCheck] = useState(null);
-
-  const InverterAlart = (message) => {
-      setInverterCheck({
-          msg: message
-      })
-  }
-
-  const BatteryAlart = (message) => {
-      setBatteryCheck({
-          msg: message
-      })
-  }
-
-  const SolarAlart = (message) => {
-      setSolarCheck({
-          msg: message
-      })
-  }
-
-
-
-  useEffect(() => {
-
-    //.................................Solar check Start...................................
-
-    function isSolarFailure(solarValue) {
-    // Get the current time
-    var currentTime = new Date().getTime();
-    
-    // Define the time range for solar failure (6:00 AM to 5:30 PM)
-    var startTime = new Date();
-    startTime.setHours(6);
-    startTime.setMinutes(0);
-    startTime.setSeconds(0);
-    
-    var endTime = new Date();
-    endTime.setHours(17);
-    endTime.setMinutes(30);
-    endTime.setSeconds(0);
-    
-    // Check if the current time is within the specified time range and if the solar value is below a certain threshold
-    if (currentTime >= startTime.getTime() && currentTime <= endTime.getTime() && solarValue < 0.5) {
-        return true;
-    } else {
-        return false;
+    //Alarts
+    const [alart, setAlart] = useState(null)
+    const showAlart = (message, type) => {
+        setAlart({
+            msg: message,
+            type: type
+        })
+        // setTimeout(() => {
+        //   setAlart(null);
+        // },3000);
     }
-}
 
-// Example solar value
-var solarValue = solarVoltage*solarCurrent;
+    const [InverterCheck, setInverterCheck] = useState(null);
+    const [BatteryCheck, setBatteryCheck] = useState(null);
+    const [SolarCheck, setSolarCheck] = useState(null);
 
-// Check if there is a solar failure
-if (isSolarFailure(solarValue)) {
-    SolarAlart("Solar failure detected between 6:00 AM and 5:30 PM.");
-} else {
-    SolarAlart("Solar system is operational.");
-}
+    const InverterAlart = (message) => {
+        setInverterCheck({
+            msg: message
+        })
+    }
 
-//..........................................Solar check end.............................................
+    const BatteryAlart = (message) => {
+        setBatteryCheck({
+            msg: message
+        })
+    }
 
-//..........................................Inverter check  Start........................................
-
-//..........................................Inverter check  End..........................................
-
-//..........................................Battery check Start..........................................
-
-//..........................................Battery check End............................................
-
-      InverterAlart("hello i am inverter");
-      BatteryAlart("Hello i am battery");
-    //   SolarAlart("hello i am solar");
-  }, [solarVoltage,solarCurrent]);
+    const SolarAlart = (message) => {
+        setSolarCheck({
+            msg: message
+        })
+    }
 
 
 
+    useEffect(() => {
+
+        //.................................Solar check Start...................................
+
+        function isSolarFailure(solarValue) {
+            // Get the current time
+            var currentTime = new Date().getTime();
+
+            // Define the time range for solar failure (6:00 AM to 5:30 PM)
+            var startTime = new Date();
+            startTime.setHours(6);
+            startTime.setMinutes(0);
+            startTime.setSeconds(0);
+
+            var endTime = new Date();
+            endTime.setHours(17);
+            endTime.setMinutes(30);
+            endTime.setSeconds(0);
+
+            // Check if the current time is within the specified time range and if the solar value is below a certain threshold
+            if (currentTime >= startTime.getTime() && currentTime <= endTime.getTime() && solarValue < 0.5) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // Example solar value
+        var solarValue = solarVoltage * solarCurrent;
+
+        // Check if there is a solar failure
+        if (isSolarFailure(solarValue)) {
+            SolarAlart("Solar failure detected between 6:00 AM and 5:30 PM.");
+        } else {
+            SolarAlart("Solar system is operational.");
+        }
+
+        //..........................................Solar check end.............................................
+
+        //..........................................Inverter check  Start........................................
+
+
+        function checkInverterStatus(solarVoltage,solarCurrent, batteryCharge, loadStatus, gridAvailability, inverterOutput) {
+            // Condition 1: Solar voltage present but zero current during peak time
+            if (solarVoltage > 0 && solarCurrent === 0 && isPeakTime()) {
+                InverterAlart("Inverter failure: Solar power is not charging.");
+            }
+            
+            // Condition 2: Solar power charged, but load running on Grid
+            if (solarVoltage > 0 && batteryCharge === 100 && loadStatus === "Grid") {
+                InverterAlart("Inverter failure: Load is running on Grid instead of inverter.");
+            }
+            
+            // Condition 3: Inverter loading only when Grid is available
+            if (inverterOutput > 0 && !gridAvailability) {
+                InverterAlart("Inverter failure: Inverter only works when Grid is available.");
+            }
+            
+            // Condition 4: Inverter output is zero despite availability of solar, grid, and battery
+            if (solarVoltage > 0 && gridAvailability && batteryCharge > 0 && inverterOutput === 0) {
+                InverterAlart("Inverter failure: Inverter output is zero.");
+            }
+            
+            // If none of the conditions match, return success
+            InverterAlart("Inverter is functioning properly.");
+        }
+        
+        // Function to check if it's peak time (10am to 2pm)
+        function isPeakTime() {
+            const currentTime = new Date();
+            const currentHour = currentTime.getHours();
+            return currentHour >= 10 && currentHour <= 14;
+        }
+        
+        // Example usage:
+        const solarVoltage = solarVoltage; // Example solar voltage in volts
+        const solarCurrent = solarCurrent; // Example solar current in amperes
+        const batteryCharge = 100; // Example battery charge percentage
+        const loadStatus = inverterVoltage < gridVoltage ? "Grid": "Inverter"; // Example load status (can be "Grid" or "Inverter")
+        const gridAvailability = gridVoltage > 0 ? true : false; // Example grid availability (true/false)
+        const inverterOutput = inverterVoltage * inverterCurrent; // Example inverter output power in watts
+        
+        checkInverterStatus(solarVoltage, solarCurrent, batteryCharge, loadStatus, gridAvailability, inverterOutput);
+        
+
+        //..........................................Inverter check  End..........................................
+
+
+        //..........................................Battery check Start..........................................
+
+        //..........................................Battery check End............................................
+
+        // InverterAlart("hello i am inverter");
+        BatteryAlart("Hello i am battery");
+        //   SolarAlart("hello i am solar");
+    }, [solarVoltage, solarCurrent, inverterVoltage,inverterCurrent,gridVoltage]);
 
 
 
 
-  useEffect(() => {
-    // handleMenuItemClick();
-    fetchdata();
-    fetchdatafull();
-}, [caldate, selectedItem] || [])
 
-  
+
+
+    useEffect(() => {
+        // handleMenuItemClick();
+        fetchdata();
+        fetchdatafull();
+    }, [caldate, selectedItem] || [])
+
+
     const fetchdata = () => {
         var mail = `${selectedItem}`
-        
+
         const databaseRef = ref(db, `data/${mail}/latestValues`);
         get(databaseRef)
             .then((snapshot) => {
@@ -210,6 +256,9 @@ if (isSolarFailure(solarValue)) {
                 setGridVoltage((record[0].gridVoltage).toFixed(2));
                 setGridCurrent((record[0].gridCurrent).toFixed(2));
                 setBatteryVoltage((record[0].batteryVoltage).toFixed(2));
+                settValue((record[0].tValue));
+
+
 
                 p1ValueTot = 0;
                 p2ValueTot = 0;
@@ -231,10 +280,12 @@ if (isSolarFailure(solarValue)) {
                 console.error('Error fetching data:', error);
             });
 
-            
-      
+
+
     }
-    
+    const LastUpdate = new Date(tValue * 1000);
+    const formattedDate = LastUpdate.toLocaleString();
+
 
 
 
@@ -249,7 +300,7 @@ if (isSolarFailure(solarValue)) {
 
         const timestamp24HoursAgo = currentTimestamp - (24 * 60 * 60);
         var mail = `${selectedItem}`
-      
+
         var uniValue = parseInt((new Date(caldate).getTime() / 1000).toFixed(0)) - 19800
         const databaseRef = ref(db, `data/${mail}/timestamp`);
         var queryRef;
@@ -271,11 +322,20 @@ if (isSolarFailure(solarValue)) {
                 setdata(record);
 
                 // Check conditions and update color after data fetching
-                if (p1ValueTot === 0 && p2ValueTot === 0 && p3ValueTot === 0) {
-                    setDateColor('#fc7266');
-                } else {
+                if (record.length) {
                     setDateColor('#8cf35d');
+                } else {
+                    setDateColor('#fc7266');
                 }
+
+
+                if ((record.length) > 0) {
+                    showAlart("This device is working", "success");
+                } else {
+                    showAlart("This device is not working", "danger");
+                }
+
+
 
             })
 
@@ -303,11 +363,11 @@ if (isSolarFailure(solarValue)) {
 
         iterVal = 0;
 
-   
-    }
-  
 
-    
+    }
+
+
+
 
 
     p1ValueTot = 0;
@@ -548,76 +608,76 @@ if (isSolarFailure(solarValue)) {
 
         })
 
-        
 
-        //clock
-        const [time, setTime] = useState(getCurrentTime());
 
-  function getCurrentTime() {
-    const today = new Date();
-    let h = today.getHours();
-    let m = today.getMinutes();
-    let s = today.getSeconds();
-    m = checkTime(m);
-    s = checkTime(s);
-    return `${h}:${m}:${s}`;
-  }
+    //clock
+    const [time, setTime] = useState(getCurrentTime());
 
-  function checkTime(i) {
-    if (i < 10) {
-      i = "0" + i;
+    function getCurrentTime() {
+        const today = new Date();
+        let h = today.getHours();
+        let m = today.getMinutes();
+        let s = today.getSeconds();
+        m = checkTime(m);
+        s = checkTime(s);
+        return `${h}:${m}:${s}`;
     }
-    return i;
-  }
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(getCurrentTime());
-    }, 1000);
+    function checkTime(i) {
+        if (i < 10) {
+            i = "0" + i;
+        }
+        return i;
+    }
 
-    return () => clearInterval(interval);
-  }, []);
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTime(getCurrentTime());
+        }, 1000);
 
-
-
-        //Alerts
-
-        useEffect(() => {
-            // Define a function to check conditions and show alerts
-            const checkAndShowAlerts = () => {
-              // Check conditions after data is fetched
-              if ((p1ValueTot / 1000) > 0 && (p3ValueTot / 1000) > 0) {
-                showAlart("This device is working", "success");
-              } else {
-                showAlart("This device is not working", "danger");
-              }
-            };
-          
-            // Delay execution after 3000 milliseconds (3 seconds)
-            const delay = 320; // time in milliseconds
-            const timerId = setTimeout(checkAndShowAlerts, delay);
-          
-            // Clean up the timer to avoid memory leaks
-            return () => clearTimeout(timerId);
-            
-          }, [p1ValueTot, p2ValueTot, p3ValueTot,showAlart]);
+        return () => clearInterval(interval);
+    }, []);
 
 
-      //-------------------card color-------------------------------------
-    
-          // Effect to update the color when solarVoltage changes
-          const [cardSolarVoltage, setcardSolarVoltage] = useState('card');
-          const [cardSolarCurrent, setcardSolarCurrent] = useState('card');
-          const [cardInverterVoltage, setcardInverterVoltage] = useState('card');
-          const [cardInverterCurrent, setcardInverterCurrent] = useState('card');
-          const [cardGridVoltage, setcardGridVoltage] = useState('card');
-          const [cardGridCurrent, setcardGridCurrent] = useState('card');
-          const [cardBatteryVoltage, setcardBatteryVoltage] = useState('card');
-        
+
+    //Alerts
+
+    // useEffect(() => {
+    //     // Define a function to check conditions and show alerts
+    //     const checkAndShowAlerts = () => {
+    //       // Check conditions after data is fetched
+    //       if ((p1ValueTot / 1000) > 0 && (p3ValueTot / 1000) > 0) {
+    //         showAlart("This device is working", "success");
+    //       } else {
+    //         showAlart("This device is not working", "danger");
+    //       }
+    //     };
+
+    //     // Delay execution after 3000 milliseconds (3 seconds)
+    //     const delay = 320; // time in milliseconds
+    //     const timerId = setTimeout(checkAndShowAlerts, delay);
+
+    //     // Clean up the timer to avoid memory leaks
+    //     return () => clearTimeout(timerId);
+
+    //   }, [p1ValueTot, p2ValueTot, p3ValueTot,showAlart]);
+
+
+    //-------------------card color-------------------------------------
+
+    // Effect to update the color when solarVoltage changes
+    const [cardSolarVoltage, setcardSolarVoltage] = useState('card');
+    const [cardSolarCurrent, setcardSolarCurrent] = useState('card');
+    const [cardInverterVoltage, setcardInverterVoltage] = useState('card');
+    const [cardInverterCurrent, setcardInverterCurrent] = useState('card');
+    const [cardGridVoltage, setcardGridVoltage] = useState('card');
+    const [cardGridCurrent, setcardGridCurrent] = useState('card');
+    const [cardBatteryVoltage, setcardBatteryVoltage] = useState('card');
+
 
     useEffect(() => {
         // Update the class name based on solarVoltage
-        const ClassSolarVoltage = solarVoltage > 0 ? 'card Highl' : 'card Lowl';
+        const ClassSolarVoltage = solarVoltage > 2 ? 'card Highl' : 'card Lowl';
         const ClassSolarCurrent = solarCurrent > 0 ? 'card Highl' : 'card Lowl';
         const ClassInverterVoltage = inverterVoltage > 180 ? 'card Highl' : 'card Lowl';
         const ClassInverterCurrent = inverterCurrent > 0 ? 'card Highl' : 'card Lowl';
@@ -634,22 +694,22 @@ if (isSolarFailure(solarValue)) {
         setcardGridCurrent(ClassGridCurrent);
         setcardBatteryVoltage(ClassBatteryVoltage);
 
-    }, [solarVoltage,solarCurrent,inverterVoltage,inverterCurrent,gridVoltage,gridCurrent,batteryVoltage]);
-     
+    }, [solarVoltage, solarCurrent, inverterVoltage, inverterCurrent, gridVoltage, gridCurrent, batteryVoltage]);
 
-          
-          
+    // console.log(tValue);
 
 
-  
+
+
+
 
     return (
         <section className='hero'>
-             
-            {/* Navbar and Sidebar */}
-            <nav style={{ justifyContent:"space-between" }}>
 
-                    {/* <h2>Welcome</h2> */}
+            {/* Navbar and Sidebar */}
+            <nav style={{ justifyContent: "space-between" }}>
+
+                {/* <h2>Welcome</h2> */}
                 {/* <img style={{ width: 190, height: 60 }} src={reImg} alt="re4billion" />
 
                 <Link to="/">
@@ -676,62 +736,75 @@ if (isSolarFailure(solarValue)) {
 
 
 
-                
+
 
                 <div className="App">
                     {/* Sidebar */}
                     <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-                        <ul>
-                            <li style={{backgroundColor:'DodgerBlue',color:'black',fontSize:'23px'}}><i className="fa-solid fa-microchip" style={{padding:"5px"}}></i>Devices</li>
-                            <li style={{ backgroundColor: selectedItem === 'ftb001' ? 'Orange' : '' }} onClick={() => handleMenuItemClick('ftb001')}>ftb001-Kollar</li>
-                            <li style={{ backgroundColor: selectedItem === 'stb001' ? 'red' : '' }}  onClick={() => handleMenuItemClick('stb001')}>stb001-Modiyur</li>
-                            <li style={{ backgroundColor: selectedItem === 'nrmsv2f001' ? 'DodgerBlue' : '' }} onClick={() => handleMenuItemClick('nrmsv2f001')}>nrmsv2f001-Ananthapuram</li>
-                            <li style={{ backgroundColor: selectedItem === 'rmsv3_001' ? 'Tomato' : '' }} onClick={() => handleMenuItemClick('rmsv3_001')}>rmsv3_001-Vengur</li>
-                            <li style={{ backgroundColor: selectedItem === 'rmsv3_002' ? 'MediumSeaGreen' : '' }} onClick={() => handleMenuItemClick('rmsv3_002')}>rmsv3_002-Sithalingamadam</li>
-                            <li style={{ backgroundColor: selectedItem === 'rmsv32_001' ? 'Gray' : '' }} onClick={() => handleMenuItemClick('rmsv32_001')}>rmsv32_001-Keelathalanur</li>
-                            <li style={{ backgroundColor: selectedItem === 'rmsv33_001' ? 'SlateBlue' : '' }} onClick={() => handleMenuItemClick('rmsv33_001')}>rmsv33_001-Perumukkal</li>
-                            <li style={{ backgroundColor: selectedItem === 'rmsv33_002' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv33_002')}>rmsv33_002-Agalur</li>
-                            <li style={{ backgroundColor: selectedItem === 'rmsv33_003' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv33_003')}>rmsv33_003-Testing</li>
-                            <li style={{ backgroundColor: selectedItem === 'rmsv33_004' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv33_004')}>rmsv33_004-Testing</li>
-                            <li style={{ backgroundColor: selectedItem === 'rmsv33_005' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv33_005')}>rmsv33_005-Testing</li>
-                            <li style={{ backgroundColor: selectedItem === 'rmsv4_001' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv4_001')}>rmsv4_001-Testing</li>
+                        <div className="sidebar-content">
+                            <ul>
+                                <li style={{ backgroundColor: 'DodgerBlue', color: 'black', fontSize: '23px', position: 'sticky', top: '0' }}>
+                                    <i className="fa-solid fa-microchip" style={{ padding: "5px" }}></i>
+                                    Devices
+                                </li>
+                                <li style={{ backgroundColor: selectedItem === 'ftb001' ? 'Orange' : '' }} onClick={() => handleMenuItemClick('ftb001')}>ftb001-Kollar</li>
+                                <li style={{ backgroundColor: selectedItem === 'stb001' ? 'red' : '' }} onClick={() => handleMenuItemClick('stb001')}>stb001-Modiyur</li>
+                                <li style={{ backgroundColor: selectedItem === 'nrmsv2f001' ? 'DodgerBlue' : '' }} onClick={() => handleMenuItemClick('nrmsv2f001')}>nrmsv2f001-Ananthapuram</li>
+                                <li style={{ backgroundColor: selectedItem === 'rmsv3_001' ? 'Tomato' : '' }} onClick={() => handleMenuItemClick('rmsv3_001')}>rmsv3_001-Vengur</li>
+                                <li style={{ backgroundColor: selectedItem === 'rmsv3_002' ? 'MediumSeaGreen' : '' }} onClick={() => handleMenuItemClick('rmsv3_002')}>rmsv3_002-Sithalingamadam</li>
+                                <li style={{ backgroundColor: selectedItem === 'rmsv32_001' ? 'Gray' : '' }} onClick={() => handleMenuItemClick('rmsv32_001')}>rmsv32_001-Keelathalanur</li>
+                                <li style={{ backgroundColor: selectedItem === 'rmsv33_001' ? 'SlateBlue' : '' }} onClick={() => handleMenuItemClick('rmsv33_001')}>rmsv33_001-Perumukkal</li>
+                                <li style={{ backgroundColor: selectedItem === 'rmsv33_002' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv33_002')}>rmsv33_002-Agalur</li>
+                                <li style={{ backgroundColor: selectedItem === 'rmsv33_003' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv33_003')}>rmsv33_003-Testing</li>
+                                <li style={{ backgroundColor: selectedItem === 'rmsv33_004' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv33_004')}>rmsv33_004-Testing</li>
+                                <li style={{ backgroundColor: selectedItem === 'rmsv33_005' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv33_005')}>rmsv33_005-Testing</li>
+                                <li style={{ backgroundColor: selectedItem === 'rmsv4_001' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv4_001')}>rmsv4_001-Testing</li>
+                                <li style={{ backgroundColor: selectedItem === 'rmsv4_003' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv4_003')}>rmsv4_003-Testing</li>
 
-                        </ul>
+                            </ul>
+                        </div>
+
 
                     </div>
 
 
                 </div>
             </nav>
-          
+
 
             {/* Card section */}
             <div className={`content ${sidebarOpen ? 'shifted' : ''}`}>
 
-            <nav className="navbar navbar-expand-lg navbar-light bg-info stickyTop">
-  <a className="navbar-brand text-white" href="#">Dashboard</a>
-  <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span className="navbar-toggler-icon"></span>
-  </button>
+                <nav className="navbar navbar-expand-lg navbar-light bg-info stickyTop">
+                    <a className="navbar-brand text-white" href="#">Dashboard</a>
+                    <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span className="navbar-toggler-icon"></span>
+                    </button>
 
-  <div className="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul className="navbar-nav mr-auto menu3">
-    <li className="nav-item active">
-        <Link className="nav-link text-white" to="https://re4billion.ai/">Home<span className="sr-only">(current)</span></Link>
-      </li>
-    <li className="nav-item active">
-        <Link className="nav-link text-white" onClick={toggleSidebar}>Devices<span className="sr-only">(current)</span></Link>
-      </li>
-      <li className="nav-item active">
-        <Link className="nav-link text-white" to="/">Status<span className="sr-only">(current)</span></Link>
-      </li>
-  
-      <li className="nav-item active">
-        <Link className="nav-link text-white" to="https://maps.re4billion.ai/" >Location<span className="sr-only">(current)</span></Link>
-      </li>
-     
-    
-      {/* <li className="nav-item dropdown">
+                    <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul className="navbar-nav mr-auto menu3">
+                            <li className="nav-item active">
+                                <Link className="nav-link text-white" to="https://re4billion.ai/">Home<span className="sr-only">(current)</span></Link>
+                            </li>
+                            <li className="nav-item active">
+                                <Link className="nav-link text-white" onClick={toggleSidebar}>Devices<span className="sr-only">(current)</span></Link>
+                            </li>
+                            <li className="nav-item active">
+                                <Link className="nav-link text-white" to="/">Status<span className="sr-only">(current)</span></Link>
+                            </li>
+
+                            <li className="nav-item active">
+                                <Link className="nav-link text-white" to="https://maps.re4billion.ai/" >Location<span className="sr-only">(current)</span></Link>
+                            </li>
+                            <li className="nav-item active">
+                                <Link className="nav-link text-white" to="/Data" >Datasheet<span className="sr-only">(current)</span></Link>
+                            </li>
+                            {/* <li className="nav-item active">
+        <Link className="nav-link text-white" to="/History" >History<span className="sr-only">(current)</span></Link>
+      </li> */}
+
+
+                            {/* <li className="nav-item dropdown">
         <a className="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Dropdown
         </a>
@@ -742,22 +815,30 @@ if (isSolarFailure(solarValue)) {
           <a className="dropdown-item" href="#">Something else here</a>
         </div>
       </li> */}
-    
-    </ul>
-   
-    <ul className="navbar-nav ml-auto"> 
-      <li className="nav-item active">
-        <Link className="nav-link text-white" onClick={handleLogout}>Logout<span className="sr-only">(current)</span></Link>
-      </li>
-    </ul>
-    
-  </div>
-</nav>
-<hr style={{ margin: '3px 0', borderTop: '0.5px solid rgba(0, 0, 0, 0.1)', backgroundColor: 'white' }} />
+
+                        </ul>
+
+                        <ul className="navbar-nav ml-auto" style={{paddingRight:'15px'}}>
+                            <li className="nav-item active">
+                                <Link className="nav-link text-white">Last update on : {formattedDate}<span className="sr-only">(current)</span></Link>
+                            </li>
+                        </ul>
+
+                        <ul className="navbar-nav ml-auto">
+                            <li className="nav-item active">
+                                <Link className="nav-link text-white" onClick={handleLogout}>Logout<span className="sr-only">(current)</span></Link>
+                            </li>
+                        </ul>
+
+                    </div>
+                </nav>
+                <hr style={{ margin: '3px 0', borderTop: '0.5px solid rgba(0, 0, 0, 0.1)', backgroundColor: 'white' }} />
 
 
-                
-            <Alart alart={alart} InverterCheck={InverterCheck} BatteryCheck={BatteryCheck} SolarCheck={SolarCheck} />
+
+                <Alart alart={alart} InverterCheck={InverterCheck} BatteryCheck={BatteryCheck} SolarCheck={SolarCheck} />
+
+
 
                 <div className="wrapper">
 
@@ -817,13 +898,13 @@ if (isSolarFailure(solarValue)) {
                 <hr style={{ margin: '3px 0', borderTop: '0.5px solid rgba(0, 0, 0, 0.1)', backgroundColor: 'white' }} />
 
                 <div className="calenderPlace">
-            <input 
-                type="date" 
-                defaultValue={dateOrg} 
-                onChange={e => { setCalDate(e.target.value) }} 
-                style={{ backgroundColor: dateColor }} 
-            />
-        </div>
+                    <input
+                        type="date"
+                        defaultValue={dateOrg}
+                        onChange={e => { setCalDate(e.target.value) }}
+                        style={{ backgroundColor: dateColor }}
+                    />
+                </div>
 
                 <div className="chartArea">
                     <div className="chart">
