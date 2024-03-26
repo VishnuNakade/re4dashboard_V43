@@ -33,7 +33,7 @@ export default function Location() {
       
       {/* Map content */}
       <div className='map' style={{ marginTop: '54px' }}>
-        <iframe src="http://localhost:3001/" title="RE4BILLION Map" style={{ width: '100%', height: '600px', border: 'none' }}></iframe>
+        <iframe src="https://maps.re4billion.ai/" title="RE4BILLION Map" style={{ width: '100%', height: '600px', border: 'none' }}></iframe>
       </div>
     </div>
   );
