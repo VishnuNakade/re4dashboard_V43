@@ -143,8 +143,10 @@ const Alldevices = ({ handleLogout}) => {
 
   
 
+// Function to fetch data for all emails
 const fetchdatafull = () => {
-    const mail = ["ftb001", "stb001", "nrmsv2f001", "rmsv3_001","rmsv3_002","rmsv32_001","rmsv33_001","rmsv33_002"];
+    const mail = ["ftb001- Kollar", "stb001- Modiyur", "nrmsv2f001- Ananthapuram", "rmsv3_001- Vengur", "rmsv3_002- Sithalingamadam", "rmsv32_001- Keelathalanur", "rmsv33_001- Perumukkal", "rmsv33_002- Agalur"];
+    
     let currentTimestamp = Math.floor(Date.now() / 1000);
 
     if (caldate) {
@@ -154,8 +156,9 @@ const fetchdatafull = () => {
     const timestamp24HoursAgo = currentTimestamp - (24 * 60 * 60);
 
     mail.forEach(email => {
-        // Fetch All Data
-        const databaseRefFull = ref(db, `data/${email}/timestamp`);
+        const emailPrefix = email.split('-')[0].trim();
+        
+        const databaseRefFull = ref(db, `data/${emailPrefix}/timestamp`);
         const queryRefFull = query(databaseRefFull, orderByKey(), startAt("" + timestamp24HoursAgo));
 
         get(queryRefFull)
@@ -163,7 +166,7 @@ const fetchdatafull = () => {
                 const recordFull = [];
                 let k = 0;
                 snapshot.forEach((childSnapshot) => {
-                    if (email === "ftb001" && childSnapshot.key > 1663660000) {
+                    if (emailPrefix === "ftb001" && childSnapshot.key > 1663660000) {
                         k = 5400;
                     }
                     const uniValue = parseInt((new Date(caldate).getTime() / 1000).toFixed(0)) - 19800;
@@ -172,71 +175,104 @@ const fetchdatafull = () => {
                     }
                 });
 
-                // Create a div element for each email's data
                 const divFull = document.createElement('div');
                 divFull.classList.add('email-data');
 
-                // Update the content of the div with the email's data
-                divFull.innerHTML = `
-                    <h3><i class="fa-solid fa-microchip" style="padding:7px"></i> ${email}</h3>
-                   
-                `;
-                // <p style="padding:7px"> Status: ${recordFull.length > 0 ? 'Working' : 'Not Working'}</p>
-                if (recordFull.length > 0) {
-                    divFull.className = 'border border-success';
+                const header = document.createElement('h3');
+                header.innerHTML = `<i class="fa-solid fa-microchip" style="padding:7px"></i> ${email}`;
+                header.style.marginRight = '10px';
+                header.style.cursor = 'pointer';
+                header.addEventListener('click', () => {
+                    toggleAdditionalData(divFull);
+                });
+                divFull.appendChild(header);
 
-                    // Fetch Latest Values Data only if recordFull length is not zero
-                    const databaseRef = ref(db, `data/${email}/latestValues`);
-                    return get(databaseRef)
+                const additionalDataDiv = document.createElement('div');
+                additionalDataDiv.classList.add('additional-data');
+                additionalDataDiv.style.display = 'none';
+                let additionalDataHTML = '';
+                if (recordFull.length > 0) {
+                    additionalDataHTML += '<p>';
+                    get(ref(db, `data/${emailPrefix}/latestValues`))
                         .then((snapshot) => {
                             const record = snapshot.val();
-
-                            // Construct additional data HTML
-                            let additionalDataHTML = '';
-                           if (record.gridVoltage.toFixed(2) > 0) {
-    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block;background-color:#8cf35d;">Grid is available: ${record.gridVoltage.toFixed(2)}V</span>`;
-} else {
-    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block; background-color:#fc7266;">Grid is not available: ${record.gridVoltage.toFixed(2)}V</span>`;
-}
-
-if (record.batteryVoltage.toFixed(2) > 22) {
-    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block; background-color:#8cf35d;">Battery works properly: ${record.batteryVoltage.toFixed(2)}V</span>`;
-} else {
-    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block;
-    background-color:#fc7266;">Battery low: ${record.batteryVoltage.toFixed(2)}V</span>`;
-}
-
-additionalDataHTML += "<br>"; // Add line break after two paragraphs
-
-if (record.inverterCurrent.toFixed(2) > 4.5) {
-    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block;
-    background-color:#fc7266;">System is overloaded: ${record.inverterCurrent.toFixed(2)}V</span>`;
-} else {
-    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block;
-    background-color:#8cf35d;">System works properly: ${record.inverterCurrent.toFixed(2)}V</span>`;
-}
-
-                            
-                            
-
-                            // Append additional data to divFull
-                            divFull.innerHTML += additionalDataHTML;
-
-                            document.getElementById('Working').appendChild(divFull); // Append to 'Working' container
+                            if (record && record.gridVoltage && record.batteryVoltage && record.inverterCurrent && record.solarVoltage && record.solarCurrent) {
+                                if (record.gridVoltage.toFixed(2) > 0) {
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block;background-color:#8cf35d; border-radius: 5px">Grid Voltage: ${record.gridVoltage.toFixed(2)} V</span>`;
+                                } else {
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block; background-color:#fc7266; border-radius: 5px">Grid Voltage is down: ${record.gridVoltage.toFixed(2)} V</span>`;
+                                }
+                                if (record.batteryVoltage.toFixed(2) > 22) {
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block; background-color:#8cf35d; border-radius: 5px">Battery Voltage: ${record.batteryVoltage.toFixed(2)} V</span>`;
+                                } else {
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block; background-color:#fc7266; border-radius: 5px">Battery Voltage is down: ${record.batteryVoltage.toFixed(2)} V</span>`;
+                                }
+                                if (record.inverterCurrent.toFixed(2) > 4.5) {
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block; background-color:#fc7266; border-radius: 5px">Inverter is overloaded: ${record.inverterCurrent.toFixed(2)} A</span>`;
+                                } else {
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block; background-color:#8cf35d; border-radius: 5px">Inverter Current: ${record.inverterCurrent.toFixed(2)} A</span>`;
+                                }
+                                if ((record.solarVoltage*record.solarCurrent).toFixed(2) > 2) {
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block;background-color:#8cf35d; border-radius: 5px">Solar power: ${(record.solarVoltage*record.solarCurrent).toFixed(2)} W</span>`;
+                                } else {
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 5px; margin: 10px; display: inline-block; background-color:#fc7266; border-radius: 5px">Solar power is down: ${(record.solarVoltage*record.solarCurrent).toFixed(2)} W</span>`;
+                                }
+                            }
+                            additionalDataHTML += '</p>';
+                            additionalDataDiv.innerHTML = additionalDataHTML;
+                            divFull.appendChild(additionalDataDiv);
                         })
                         .catch((error) => {
-                            console.error(`Error fetching data for ${email}:`, error);
+                            console.error(`Error fetching data for ${emailPrefix}:`, error);
                         });
+                }
+
+                if (recordFull.length > 0) {
+                    divFull.className = 'border border-success';
+                    document.getElementById('Working').appendChild(divFull);
                 } else {
                     divFull.className = 'border border-danger';
-                    document.getElementById('notWorking').appendChild(divFull); // Append to 'notWorking' container
+                    document.getElementById('notWorking').appendChild(divFull);
                 }
             })
             .catch((error) => {
-                console.error(`Error fetching data for ${email}:`, error);
+                console.error(`Error fetching data for ${emailPrefix}:`, error);
             });
     });
 };
+
+
+// Function to toggle additional data display
+let currentOpenEmail = null;
+
+function toggleAdditionalData(element) {
+    const additionalDataDiv = element.querySelector('.additional-data');
+    
+    if (!additionalDataDiv) {
+        // If additionalDataDiv is null, it means there are no records for this email
+        return;
+    }
+    
+    const hasRecords = additionalDataDiv.innerHTML.trim() !== ''; // Check if there are records
+    
+    // If another email's additional data is currently displayed, hide it
+    if (currentOpenEmail && currentOpenEmail !== element && hasRecords) {
+        const currentOpenAdditionalDataDiv = currentOpenEmail.querySelector('.additional-data');
+        currentOpenAdditionalDataDiv.style.display = 'none';
+    }
+    
+    // Toggle display of additional data for the current email
+    if (hasRecords) {
+        additionalDataDiv.style.display = (additionalDataDiv.style.display === 'none') ? 'block' : 'none';
+        currentOpenEmail = (additionalDataDiv.style.display === 'block') ? element : null;
+    }
+}
+
+
+
+
+
+
 
 
 
@@ -535,7 +571,7 @@ if (record.inverterCurrent.toFixed(2) > 4.5) {
    
     <ul className="navbar-nav ml-auto menu3"> 
       <li className="nav-item active">
-        <Link className="nav-link text-white" to="db" >Go to Dashboard<span className="sr-only">(current)</span></Link>
+        <Link className="nav-link text-white" to="/db" >Go to Dashboard<span className="sr-only">(current)</span></Link>
       </li>
     </ul>
     

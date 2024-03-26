@@ -36,6 +36,8 @@ let v7 = 0;
 let v8 = 0;
 let v9 = 0;
 let v10 = 0;
+let v11 = 0;
+let v12 = 0;
 const myArray1 = []
 const myArray2 = []
 const myArray3 = []
@@ -46,6 +48,8 @@ const myArray7 = []
 const myArray8 = []
 const myArray9 = []
 const myArray10 = []
+const myArray11 = []
+const myArray12 = []
 let iterVal = 0;
 
 
@@ -62,6 +66,7 @@ const Hero = ({ handleLogout }) => {
     const [gridVoltage, setGridVoltage] = useState('')
     const [gridCurrent, setGridCurrent] = useState('')
     const [batteryVoltage, setBatteryVoltage] = useState('')
+    const [batteryCurrent, setBatteryCurrent] = useState('')
     const [tValue, settValue] = useState('')
 
 
@@ -257,6 +262,8 @@ const Hero = ({ handleLogout }) => {
                 setGridCurrent((record[0].gridCurrent).toFixed(2));
                 setBatteryVoltage((record[0].batteryVoltage).toFixed(2));
                 settValue((record[0].tValue));
+                setBatteryCurrent((record[0].batteryCurrent !== undefined ? (record[0].batteryCurrent).toFixed(2) : 0));
+
 
 
 
@@ -274,6 +281,8 @@ const Hero = ({ handleLogout }) => {
                 v8 = 0;
                 v9 = 0;
                 v10 = 0;
+                v11 = 0;
+                v12 = 0;
                 iterVal = 0;
             })
             .catch((error) => {
@@ -360,6 +369,8 @@ const Hero = ({ handleLogout }) => {
         v8 = 0;
         v9 = 0;
         v10 = 0;
+        v11 = 0;
+        v12 = 0;
 
         iterVal = 0;
 
@@ -531,17 +542,28 @@ const Hero = ({ handleLogout }) => {
                 v10 = Math.abs(value.val().batteryVoltage)
                 myArray10.push(v10)
 
+                v11 = Math.abs(value.val().batteryCurrent)
+                myArray11.push(v11)
+
+                v12 = Math.abs((value.val().batteryVoltage) * (value.val().batteryCurrent))
+                myArray12.push(v12)
+
             } else {
                 myArray1.push(Math.abs(value.val().solarVoltage))
                 myArray2.push(Math.abs(value.val().solarCurrent))
                 myArray3.push(Math.abs((value.val().solarVoltage) * (value.val().solarCurrent)))
+
                 myArray4.push(Math.abs(value.val().inverterVoltage))
                 myArray5.push(Math.abs(value.val().inverterCurrent))
                 myArray6.push(Math.abs((value.val().inverterVoltage) * (value.val().inverterCurrent)))
+
                 myArray7.push(Math.abs(value.val().gridVoltage))
                 myArray8.push(Math.abs(value.val().gridCurrent))
                 myArray9.push(Math.abs((value.val().gridVoltage) * (value.val().gridCurrent)))
+
                 myArray10.push(Math.abs(value.val().batteryVoltage))
+                myArray11.push(Math.abs(value.val().batteryCurrent))
+                myArray12.push(Math.abs((value.val().batteryVoltage) * (value.val().batteryCurrent)))
 
                 let sum1 = 0;
                 let sum2 = 0;
@@ -553,6 +575,8 @@ const Hero = ({ handleLogout }) => {
                 let sum8 = 0;
                 let sum9 = 0;
                 let sum10 = 0;
+                let sum11 = 0;
+                let sum12 = 0;
 
                 for (var i = iterVal; i < iterVal + 10; i++) {
                     sum1 = sum1 + myArray1[i]
@@ -565,6 +589,8 @@ const Hero = ({ handleLogout }) => {
                     sum8 = sum8 + myArray8[i]
                     sum9 = sum9 + myArray9[i]
                     sum10 = sum10 + myArray10[i]
+                    sum11 = sum11 + myArray11[i]
+                    sum12 = sum12 + myArray12[i]
                 }
                 // console.log("sum2")
                 // console.log(sum2)
@@ -579,30 +605,42 @@ const Hero = ({ handleLogout }) => {
                 v8 = sum8 / 10
                 v9 = sum9 / 10
                 v10 = sum10 / 10
+                v11 = sum11 / 10
+                v12 = sum12 / 10
             }
             return {
                 ccAxisXValue: date,
                 SolarVoltage: Math.abs(value.val().solarVoltage),
                 SolarCurrent: Math.abs(value.val().solarCurrent),
                 SolarPower: Math.abs((value.val().solarVoltage) * (value.val().solarCurrent)),
+
                 InverterVoltage: Math.abs(value.val().inverterVoltage),
                 InverterCurrent: Math.abs(value.val().inverterCurrent),
                 InverterPower: Math.abs((value.val().inverterVoltage) * (value.val().inverterCurrent)),
+
                 GridVoltage: Math.abs(value.val().gridVoltage),
                 GridCurrent: Math.abs(value.val().gridCurrent),
                 GridPower: Math.abs((value.val().gridVoltage) * (value.val().gridCurrent)),
+
                 BatteryVoltage: Math.abs(value.val().batteryVoltage),
+                BatteryCurrent: Math.abs(value.val().batteryCurrent),
+                BatteryPower: Math.abs((value.val().batteryVoltage) * (value.val().batteryCurrent)),
 
                 SolarVoltageSmooth: v1,
                 SolarCurrentSmooth: v2,
                 SolarPowerSmooth: v3,
+
                 InverterVoltageSmooth: v4,
                 InverterCurrentSmooth: v5,
                 InverterPowerSmooth: v6,
+
                 GridVoltageSmooth: v7,
                 GridCurrentSmooth: v8,
                 GridPowerSmooth: v9,
+
                 BatteryVoltageSmooth: v10,
+                BatteryCurrentSmooth: v11,
+                BatteryPowerSmooth: v12,
 
             }
 
@@ -673,6 +711,7 @@ const Hero = ({ handleLogout }) => {
     const [cardGridVoltage, setcardGridVoltage] = useState('card');
     const [cardGridCurrent, setcardGridCurrent] = useState('card');
     const [cardBatteryVoltage, setcardBatteryVoltage] = useState('card');
+    const [cardBatteryCurrent, setcardBatteryCurrent] = useState('card');
 
 
     useEffect(() => {
@@ -684,6 +723,7 @@ const Hero = ({ handleLogout }) => {
         const ClassGridVoltage = gridVoltage > 160 ? 'card Highl' : 'card Lowl';
         const ClassGridCurrent = gridCurrent > 0 ? 'card Highl' : 'card Lowl';
         const ClassBatteryVoltage = batteryVoltage > 22 ? 'card Highl' : 'card Lowl';
+        const ClassBatteryCurrent = batteryCurrent > 0 ? 'card Highl' : 'card Lowl';
 
 
         setcardSolarVoltage(ClassSolarVoltage);
@@ -693,8 +733,9 @@ const Hero = ({ handleLogout }) => {
         setcardGridVoltage(ClassGridVoltage);
         setcardGridCurrent(ClassGridCurrent);
         setcardBatteryVoltage(ClassBatteryVoltage);
+        setcardBatteryCurrent(ClassBatteryCurrent);
 
-    }, [solarVoltage, solarCurrent, inverterVoltage, inverterCurrent, gridVoltage, gridCurrent, batteryVoltage]);
+    }, [solarVoltage, solarCurrent, inverterVoltage, inverterCurrent, gridVoltage, gridCurrent, batteryVoltage,batteryCurrent]);
 
     // console.log(tValue);
 
@@ -758,7 +799,11 @@ const Hero = ({ handleLogout }) => {
                                 <li style={{ backgroundColor: selectedItem === 'rmsv33_003' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv33_003')}>rmsv33_003-Testing</li>
                                 <li style={{ backgroundColor: selectedItem === 'rmsv33_004' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv33_004')}>rmsv33_004-Testing</li>
                                 <li style={{ backgroundColor: selectedItem === 'rmsv33_005' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv33_005')}>rmsv33_005-Testing</li>
+
                                 <li style={{ backgroundColor: selectedItem === 'rmsv4_001' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv4_001')}>rmsv4_001-Testing</li>
+
+                                <li style={{ backgroundColor: selectedItem === 'rmsv4_002' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv4_002')}>rmsv4_002-Testing</li>
+
                                 <li style={{ backgroundColor: selectedItem === 'rmsv4_003' ? 'Violet' : '' }} onClick={() => handleMenuItemClick('rmsv4_003')}>rmsv4_003-Testing</li>
 
                             </ul>
@@ -790,11 +835,11 @@ const Hero = ({ handleLogout }) => {
                                 <Link className="nav-link text-white" onClick={toggleSidebar}>Devices<span className="sr-only">(current)</span></Link>
                             </li>
                             <li className="nav-item active">
-                                <Link className="nav-link text-white" to="/">Status<span className="sr-only">(current)</span></Link>
+                                <Link className="nav-link text-white" to="/Alldevices">Status<span className="sr-only">(current)</span></Link>
                             </li>
 
                             <li className="nav-item active">
-                                <Link className="nav-link text-white" to="https://maps.re4billion.ai/" >Location<span className="sr-only">(current)</span></Link>
+                                <Link className="nav-link text-white" to="/" >Location<span className="sr-only">(current)</span></Link>
                             </li>
                             <li className="nav-item active">
                                 <Link className="nav-link text-white" to="/Data" >Datasheet<span className="sr-only">(current)</span></Link>
@@ -876,6 +921,15 @@ const Hero = ({ handleLogout }) => {
                         <h2 className="card_title">Battery Voltage</h2>
                         <h3 className="card_value">{batteryVoltage} V</h3>
                     </div>
+
+                    {(batteryCurrent !== undefined && batteryCurrent !== 0) && (
+    <div className={cardBatteryCurrent}>
+        <h2 className="card_title">Battery Current</h2>
+        <h3 className="card_value">{batteryCurrent} A</h3>
+    </div>
+)}
+
+
 
                 </div>
 
@@ -1036,6 +1090,35 @@ const Hero = ({ handleLogout }) => {
                             {/* <Line name="Battery Voltage" type="monotone" dataKey="BatteryVoltageSmooth" stroke="#1338be"  dot={false} /> */}
                         </LineChart>
                     </div>
+
+                    <div className="chart">
+                        <LineChart width={350} height={280} data={dataCharts}
+                            margin={{ top: 35, right: 30, left: 20, bottom: 5, }} >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="ccAxisXValue" angle={-15} textAnchor="end" style={{ fontSize: '0.8rem', }} />
+                            <YAxis style={{ fontSize: '0.8rem', }} label={{ dx: -10, value: '(Amps)', angle: -90, fontSize: '0.9rem', }} />
+                            <Tooltip />
+                            <Legend layout="horizontal" verticalAlign="top" align="center" />
+                            <Line type="monotone" dataKey="BatteryCurrent" stroke="#03c04a" dot={false} />
+                            {/* <Line name="Grid Current" type="monotone" dataKey="GridCurrentSmooth" stroke="#03c04a"  dot={false} /> */}
+                        </LineChart>
+                    </div>
+
+                    <div className="chart">
+                        <LineChart width={350} height={280} data={dataCharts}
+                            margin={{ top: 35, right: 30, left: 20, bottom: 5, }} >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="ccAxisXValue" angle={-15} textAnchor="end" style={{ fontSize: '0.8rem', }} />
+                            <YAxis style={{ fontSize: '0.8rem', }} label={{ dx: -10, value: '(Watts)', angle: -90, fontSize: '0.9rem', }} />
+                            <Tooltip />
+                            <Legend layout="horizontal" verticalAlign="top" align="center" />
+                            <Line type="monotone" dataKey="BatteryPower" stroke="#b90e0a" dot={false} />
+                            {/* <Line name="Grid Power" type="monotone" dataKey="GridPowerSmooth" stroke="#b90e0a"  dot={false} /> */}
+                        </LineChart>
+                    </div>
+
+
+                    
                 </div>
             </div>
 
