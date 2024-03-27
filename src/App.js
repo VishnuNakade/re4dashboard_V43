@@ -134,7 +134,7 @@ function App()  {
         <Loading />
       ) : user ? (
         <Routes>
-        <Route exact path="/" element={ <Location/> }></Route>
+        <Route exact path="/" element={ <Location handleLogout={handleLogout}/> }></Route>
         <Route exact path="/Alldevices" element={ <Alldevices/> }></Route>
         <Route exact path="/db" element={<Hero handleLogout={handleLogout}  /> }></Route>
         <Route exact path="/History" element={ <History/> }></Route>

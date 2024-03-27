@@ -565,7 +565,7 @@ function toggleAdditionalData(element) {
         <Link className="nav-link text-white" to="https://re4billion.ai/">Home<span className="sr-only">(current)</span></Link>
       </li>
       <li className="nav-item active">
-        <Link className="nav-link text-white" to="https://maps.re4billion.ai/" >Location<span className="sr-only">(current)</span></Link>
+        <Link className="nav-link text-white" to="/" >Location<span className="sr-only">(current)</span></Link>
       </li>
     </ul>
    

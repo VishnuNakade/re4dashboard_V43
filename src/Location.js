@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-export default function Location() {
+export default function Location({ handleLogout }) {
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-light bg-info stickyTop">
@@ -20,7 +20,13 @@ export default function Location() {
             </li>
 
           </ul>
-        
+
+          <ul className="navbar-nav ml-auto menu3">
+            <li className="nav-item active">
+              <Link className="nav-link text-white" onClick={handleLogout}>Logout<span className="sr-only">(current)</span></Link>
+            </li>
+          </ul>
+
           {/* <ul className="navbar-nav ml-auto menu3"> 
             <li className="nav-item active">
               <Link className="nav-link text-white" to="/db" >Go to Dashboard<span className="sr-only">(current)</span></Link>
@@ -28,9 +34,9 @@ export default function Location() {
           </ul> */}
         </div>
       </nav>
-      
+
       <hr style={{ margin: '3px 0', borderTop: '0.5px solid rgba(0, 0, 0, 0.1)', backgroundColor: 'white' }} />
-      
+
       {/* Map content */}
       <div className='map' style={{ marginTop: '54px' }}>
         <iframe src="https://maps.re4billion.ai/" title="RE4BILLION Map" style={{ width: '100%', height: '600px', border: 'none' }}></iframe>
