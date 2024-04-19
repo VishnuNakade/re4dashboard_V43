@@ -92,21 +92,10 @@ const Hero = ({ handleLogout }) => {
         setSidebarOpen(!sidebarOpen);
     };
 
-const handleMenuItemClick = (itemName) => {
-    setSelectedItem(itemName);
-    // Save the selected item to localStorage
-    localStorage.setItem('selectedItem', itemName);
-    // You can perform any other actions here based on the selected item
-};
-
-// Add this code to your component to retrieve the selected item from localStorage
-useEffect(() => {
-    const storedItem = localStorage.getItem('selectedItem');
-    if (storedItem) {
-        setSelectedItem(storedItem);
-    }
-}, []); // This effect runs only once when the component mounts
-
+    const handleMenuItemClick = (itemName) => {
+        setSelectedItem(itemName);
+        // You can perform any other actions here based on the selected item
+    };
     //Sidebar end
 
 
@@ -147,22 +136,24 @@ useEffect(() => {
 
 
     useEffect(() => {
+
         //.................................Solar check Start...................................
+
         function isSolarFailure(solarValue) {
             // Get the current time
             var currentTime = new Date().getTime();
-    
+
             // Define the time range for solar failure (6:00 AM to 5:30 PM)
             var startTime = new Date();
             startTime.setHours(6);
             startTime.setMinutes(0);
             startTime.setSeconds(0);
-    
+
             var endTime = new Date();
             endTime.setHours(17);
             endTime.setMinutes(30);
             endTime.setSeconds(0);
-    
+
             // Check if the current time is within the specified time range and if the solar value is below a certain threshold
             if (currentTime >= startTime.getTime() && currentTime <= endTime.getTime() && solarValue < 0.5) {
                 return true;
@@ -170,71 +161,76 @@ useEffect(() => {
                 return false;
             }
         }
-    
+
         // Example solar value
         var solarValue = solarVoltage * solarCurrent;
-    
+
         // Check if there is a solar failure
         if (isSolarFailure(solarValue)) {
-            SolarAlart(`Solar failure detected between 6:00 AM and 5:30 PM. ${(solarCurrent * solarVoltage).toFixed(2)} W`);
+            SolarAlart("Solar failure detected between 6:00 AM and 5:30 PM.");
         } else {
-            SolarAlart(`Solar system is operational. ${(solarCurrent * solarVoltage).toFixed(2)} W`);
+            SolarAlart("Solar system is operational.");
         }
+
         //..........................................Solar check end.............................................
-    
+
         //..........................................Inverter check  Start........................................
-    
+
+
         function checkInverterStatus(solarVoltage, solarCurrent, batteryCharge, loadStatus, gridAvailability, inverterOutput) {
             // Condition 1: Solar voltage present but zero current during peak time
             if (solarVoltage > 0 && solarCurrent === 0 && isPeakTime()) {
                 InverterAlart("Inverter failure: Solar power is not charging.");
             }
-    
+
             // Condition 2: Solar power charged, but load running on Grid
             if (solarVoltage > 0 && batteryCharge === 100 && loadStatus === "Grid") {
                 InverterAlart("Inverter failure: Load is running on Grid instead of inverter.");
             }
-    
+
             // Condition 3: Inverter loading only when Grid is available
             if (inverterOutput > 0 && !gridAvailability) {
                 InverterAlart("Inverter failure: Inverter only works when Grid is available.");
             }
-    
+
             // Condition 4: Inverter output is zero despite availability of solar, grid, and battery
             if (solarVoltage > 0 && gridAvailability && batteryCharge > 0 && inverterOutput === 0) {
                 InverterAlart("Inverter failure: Inverter output is zero.");
             }
-    
+
             // If none of the conditions match, return success
-            InverterAlart(`Inverter is functioning properly.  ${(inverterVoltage * inverterCurrent).toFixed(2)} W`);
+            InverterAlart("Inverter is functioning properly.");
         }
-    
+
         // Function to check if it's peak time (10am to 2pm)
         function isPeakTime() {
             const currentTime = new Date();
             const currentHour = currentTime.getHours();
             return currentHour >= 10 && currentHour <= 14;
         }
-    
+
         // Example usage:
+        const solarVoltage = solarVoltage; // Example solar voltage in volts
+        const solarCurrent = solarCurrent; // Example solar current in amperes
+        const batteryCharge = 100; // Example battery charge percentage
         const loadStatus = inverterVoltage < gridVoltage ? "Grid" : "Inverter"; // Example load status (can be "Grid" or "Inverter")
-        const gridAvailability = gridVoltage > 0; // Example grid availability (true/false)
+        const gridAvailability = gridVoltage > 0 ? true : false; // Example grid availability (true/false)
         const inverterOutput = inverterVoltage * inverterCurrent; // Example inverter output power in watts
-        const batteryCharge = 100; 
+
         checkInverterStatus(solarVoltage, solarCurrent, batteryCharge, loadStatus, gridAvailability, inverterOutput);
-    
+
+
         //..........................................Inverter check  End..........................................
-    
+
+
         //..........................................Battery check Start..........................................
-        // No battery check code provided
+
         //..........................................Battery check End............................................
-    
+
         // InverterAlart("hello i am inverter");
         BatteryAlart("Hello i am battery");
         //   SolarAlart("hello i am solar");
     }, [solarVoltage, solarCurrent, inverterVoltage, inverterCurrent, gridVoltage]);
-
-    
 
 
 
@@ -306,25 +302,27 @@ useEffect(() => {
 
 
     const fetchdatafull = () => {
-        let currentTimestamp = Math.floor(Date.now() / 1000);
-    
+        let currentTimestamp = Math.floor(Date.now() / 1000);;
+
         if (caldate) {
             currentTimestamp = Math.floor(new Date(caldate).getTime() / 1000);
         }
-    
+
+
         const timestamp24HoursAgo = currentTimestamp - (24 * 60 * 60);
         var mail = `${selectedItem}`
-    
+
         var uniValue = parseInt((new Date(caldate).getTime() / 1000).toFixed(0)) - 19800
         const databaseRef = ref(db, `data/${mail}/timestamp`);
         var queryRef;
         queryRef = query(databaseRef, orderByKey(), startAt("" + timestamp24HoursAgo));
-    
+
         get(queryRef)
             .then((snapshot) => {
                 const record = [];
                 let k = 0;
                 snapshot.forEach((childSnapshot) => {
+                    // console.log(childSnapshot.key)
                     if (mail == "ftb001" && childSnapshot.key > 1663660000) {
                         k = 5400;
                     }
@@ -333,47 +331,52 @@ useEffect(() => {
                     }
                 })
                 setdata(record);
-    
+
                 // Check conditions and update color after data fetching
                 if (record.length) {
                     setDateColor('#8cf35d');
                 } else {
                     setDateColor('#fc7266');
                 }
-    
-                if (record.length > 0) {
+
+
+                if ((record.length) > 0) {
                     showAlart("This device is working", "success");
                 } else {
                     showAlart("This device is not working", "danger");
                 }
+
+
+
             })
-            .finally(() => {
-                // Resetting variables
-                prevTime = 24;
-                prevTimeOld = 24;
-                timeCount = 0;
-                p1Value = 0;
-                p2Value = 0;
-                p3Value = 0;
-                p1ValueTot = 0;
-                p2ValueTot = 0;
-                p3ValueTot = 0;
-                flag = 0;
-                axisValueCount = 0;
-                v1 = 0;
-                v2 = 0;
-                v3 = 0;
-                v4 = 0;
-                v5 = 0;
-                v6 = 0;
-                v7 = 0;
-                v8 = 0;
-                v9 = 0;
-                v10 = 0;
-                v11 = 0;
-                v12 = 0;
-                iterVal = 0;
-            });
+
+        prevTime = 24;
+        prevTimeOld = 24;
+        timeCount = 0;
+        p1Value = 0;
+        p2Value = 0;
+        p3Value = 0;
+        p1ValueTot = 0;
+        p2ValueTot = 0;
+        p3ValueTot = 0;
+        flag = 0;
+        axisValueCount = 0;
+        v1 = 0;
+        v2 = 0;
+        v3 = 0;
+        v4 = 0;
+        v5 = 0;
+        v6 = 0;
+        v7 = 0;
+        v8 = 0;
+        v9 = 0;
+        v10 = 0;
+        v11 = 0;
+        v12 = 0;
+
+        iterVal = 0;
+
+
     }
 
 
@@ -613,21 +616,21 @@ useEffect(() => {
             }
             return {
                 ccAxisXValue: dateForGraph,
-                SolarVoltage: Math.floor(Math.abs(value.val().solarVoltage)),
-                SolarCurrent: Math.abs(value.val().solarCurrent).toFixed(2),
-                SolarPower: Math.floor( Math.abs((value.val().solarVoltage) * (value.val().solarCurrent))),
+                SolarVoltage: Math.abs(value.val().solarVoltage),
+                SolarCurrent: Math.abs(value.val().solarCurrent),
+                SolarPower: Math.abs((value.val().solarVoltage) * (value.val().solarCurrent)),
 
-                InverterVoltage: Math.floor( Math.abs(value.val().inverterVoltage)),
-                InverterCurrent:  Math.abs(value.val().inverterCurrent).toFixed(2),
-                InverterPower: Math.floor( Math.abs((value.val().inverterVoltage) * (value.val().inverterCurrent))),
+                InverterVoltage: Math.abs(value.val().inverterVoltage),
+                InverterCurrent: Math.abs(value.val().inverterCurrent),
+                InverterPower: Math.abs((value.val().inverterVoltage) * (value.val().inverterCurrent)),
 
-                GridVoltage: Math.floor( Math.abs(value.val().gridVoltage)),
-                GridCurrent:Math.abs(value.val().gridCurrent).toFixed(2),
-                GridPower:Math.floor( Math.abs((value.val().gridVoltage) * (value.val().gridCurrent))),
+                GridVoltage: Math.abs(value.val().gridVoltage),
+                GridCurrent: Math.abs(value.val().gridCurrent),
+                GridPower: Math.abs((value.val().gridVoltage) * (value.val().gridCurrent)),
 
-                BatteryVoltage: Math.floor( Math.abs(value.val().batteryVoltage)),
-                BatteryCurrent: Math.abs(value.val().batteryCurrent).toFixed(2),
-                BatteryPower: Math.floor( Math.abs((value.val().batteryVoltage) * (value.val().batteryCurrent))),
+                BatteryVoltage: Math.abs(value.val().batteryVoltage),
+                BatteryCurrent: Math.abs(value.val().batteryCurrent),
+                BatteryPower: Math.abs((value.val().batteryVoltage) * (value.val().batteryCurrent)),
 
                 SolarVoltageSmooth: v1,
                 SolarCurrentSmooth: v2,

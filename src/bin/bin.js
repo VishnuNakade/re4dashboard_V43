@@ -361,5 +361,164 @@ const fetchdata = () => {
 }
 
 
+//To update the code in the fetchdatafull function and reset p1ValueTot, p2ValueTot, and p3ValueTot to 0, you can simply set them to 0 after the previous values are being used. Here's the updated function:
+
+const fetchdatafull = () => {
+    let currentTimestamp = Math.floor(Date.now() / 1000);
+
+    if (caldate) {
+        currentTimestamp = Math.floor(new Date(caldate).getTime() / 1000);
+    }
+
+    const timestamp24HoursAgo = currentTimestamp - (24 * 60 * 60);
+    var mail = `${selectedItem}`
+
+    var uniValue = parseInt((new Date(caldate).getTime() / 1000).toFixed(0)) - 19800
+    const databaseRef = ref(db, `data/${mail}/timestamp`);
+    var queryRef;
+    queryRef = query(databaseRef, orderByKey(), startAt("" + timestamp24HoursAgo));
+
+    get(queryRef)
+        .then((snapshot) => {
+            const record = [];
+            let k = 0;
+            snapshot.forEach((childSnapshot) => {
+                if (mail == "ftb001" && childSnapshot.key > 1663660000) {
+                    k = 5400;
+                }
+                if (childSnapshot.key > uniValue - k && childSnapshot.key < uniValue + 86400 - k) {
+                    record.push(childSnapshot)
+                }
+            })
+            setdata(record);
+
+            // Check conditions and update color after data fetching
+            if (record.length) {
+                setDateColor('#8cf35d');
+            } else {
+                setDateColor('#fc7266');
+            }
+
+            if (record.length > 0) {
+                showAlart("This device is working", "success");
+            } else {
+                showAlart("This device is not working", "danger");
+            }
+        })
+        .finally(() => {
+            // Resetting variables
+            prevTime = 24;
+            prevTimeOld = 24;
+            timeCount = 0;
+            p1Value = 0;
+            p2Value = 0;
+            p3Value = 0;
+            p1ValueTot = 0;
+            p2ValueTot = 0;
+            p3ValueTot = 0;
+            flag = 0;
+            axisValueCount = 0;
+            v1 = 0;
+            v2 = 0;
+            v3 = 0;
+            v4 = 0;
+            v5 = 0;
+            v6 = 0;
+            v7 = 0;
+            v8 = 0;
+            v9 = 0;
+            v10 = 0;
+            v11 = 0;
+            v12 = 0;
+            iterVal = 0;
+        });
+}
+
+// This code will reset p1ValueTot, p2ValueTot, and p3ValueTot to 0 after the fetchdatafull function has fetched data and performed any necessary operations on it.
+
+
+const fetchdatafull = () => {
+    let currentTimestamp = Math.floor(Date.now() / 1000);;
+
+    if (caldate) {
+        currentTimestamp = Math.floor(new Date(caldate).getTime() / 1000);
+    }
+
+
+    const timestamp24HoursAgo = currentTimestamp - (24 * 60 * 60);
+    var mail = `${selectedItem}`
+
+    var uniValue = parseInt((new Date(caldate).getTime() / 1000).toFixed(0)) - 19800
+    const databaseRef = ref(db, `data/${mail}/timestamp`);
+    var queryRef;
+    queryRef = query(databaseRef, orderByKey(), startAt("" + timestamp24HoursAgo));
+
+    get(queryRef)
+        .then((snapshot) => {
+            const record = [];
+            let k = 0;
+            snapshot.forEach((childSnapshot) => {
+                // console.log(childSnapshot.key)
+                if (mail == "ftb001" && childSnapshot.key > 1663660000) {
+                    k = 5400;
+                }
+                if (childSnapshot.key > uniValue - k && childSnapshot.key < uniValue + 86400 - k) {
+                    record.push(childSnapshot)
+                }
+            })
+            setdata(record);
+
+            // Check conditions and update color after data fetching
+            if (record.length) {
+                setDateColor('#8cf35d');
+            } else {
+                setDateColor('#fc7266');
+            }
+
+
+            if ((record.length) > 0) {
+                showAlart("This device is working", "success");
+            } else {
+                showAlart("This device is not working", "danger");
+            }
+
+
+
+        })
+
+    prevTime = 24;
+    prevTimeOld = 24;
+    timeCount = 0;
+    p1Value = 0;
+    p2Value = 0;
+    p3Value = 0;
+    p1ValueTot = 0;
+    p2ValueTot = 0;
+    p3ValueTot = 0;
+    flag = 0;
+    axisValueCount = 0;
+    v1 = 0;
+    v2 = 0;
+    v3 = 0;
+    v4 = 0;
+    v5 = 0;
+    v6 = 0;
+    v7 = 0;
+    v8 = 0;
+    v9 = 0;
+    v10 = 0;
+    v11 = 0;
+    v12 = 0;
+
+    iterVal = 0;
+
+
+}
+
+
+
+
+
+
 
 

@@ -241,11 +241,21 @@ color: white;
   font-size: 3rem;
 }
 .Highl{
-  background-color: #8cf35d;
+  /* background-color: #8cf35d; */
+  background: linear-gradient(45deg,#2ed8b6,#59e0c5);
+  color: white;
+}
+
+.card:hover {
+  transform: scale(1.1);
+  cursor:default;
 }
 
 .Lowl{
-  background-color:#fc7266;
+  /* background-color:#fc7266; */
+  background: linear-gradient(45deg,#FF5370,#ff869a);
+  color: white;
+
 }
 
 .stickyTop{
@@ -322,6 +332,25 @@ color: white;
 }
 
 
+.chart-container {
+  border: 2px solid  #17a2b8;
+  padding: 20px 3px 3px 2px; /* Adjust padding to make the border closer to the left side */
+  width: fit-content; /* Adjust the width as per your requirement */
+  margin: 20px 5px 5px 5px; /* Center the container horizontally and add 20px margin from the top */
+  border-radius: 5px;
+}
 
+
+
+
+
+
+
+
+
+.custom-modal-dialog {
+  max-width: 900px; /* Adjust the width as needed */
+  width: 90%;
+}
 
 

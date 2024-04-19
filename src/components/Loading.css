@@ -79,3 +79,8 @@
     margin-top: 0;
   }
 }
+
+.custom-modal-dialog{
+  border: 3px solid #17a2b8;
+  border-radius: 4px;
+}

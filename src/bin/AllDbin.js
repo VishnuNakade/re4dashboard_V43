@@ -149,18 +149,7 @@ useEffect(() => {
 // Function to fetch data for all emails
 const mail = ["ftb001- Kollar", "stb001- Modiyur", "nrmsv2f001- Ananthapuram", "rmsv3_001- Vengur", "rmsv3_002- Sithalingamadam", "rmsv32_001- Keelathalanur", "rmsv33_001- Perumukkal", "rmsv33_002- Agalur"];
 
-const fetchdatafull = async() => {
-
-    try {
-        await datafull(); // Call the datafull function and await its completion
-        // The rest of your code that depends on the data from datafull function goes here
-        // For example, if you need to perform further operations after datafull completes, place them here
-    } catch (error) {
-        console.error("Error fetching full data:", error);
-        // Handle error if needed
-    }
-
-
+const fetchdatafull = () => {
     let currentTimestamp = Math.floor(Date.now() / 1000);
 
     if (caldate) {
@@ -226,56 +215,30 @@ const fetchdatafull = async() => {
                     get(ref(db, `data/${emailPrefix}/latestValues`))
                         .then((snapshot) => {
                             const record = snapshot.val();
-                            if (record && record.solarVoltage!== undefined  && record.solarCurrent !== undefined && record.inverterVoltage !== undefined && record.inverterCurrent !== undefined &&  record.gridVoltage !== undefined &&  record.gridCurrent !== undefined  && record.batteryVoltage !== undefined) {
-
-                                if (record.solarVoltage.toFixed(2) > 0) {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block;background-color:#8cf35d; border-radius: 5px; font-size: 15px;">Solar Voltage: ${record.solarVoltage.toFixed(2)} V</span>`;
-                                } else {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px; color:#FFFFFF;">Solar Voltage is down: ${record.solarVoltage.toFixed(2)} V</span>`;
-                                }
-
-                                if (record.inverterVoltage.toFixed(2) > 0) {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block;background-color:#8cf35d; border-radius: 5px; font-size: 15px;">Inverter Voltage: ${record.inverterVoltage.toFixed(2)} V</span>`;
-                                } else {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px; color:#FFFFFF;">Inverter Voltage is down: ${record.inverterVoltage.toFixed(2)} V</span>`;
-                                }
-                                
+                            if (record && record.gridVoltage !== undefined && record.batteryVoltage !== undefined && record.inverterCurrent !== undefined && record.solarVoltage !== undefined && record.solarCurrent !== undefined) {
                                 if (record.gridVoltage.toFixed(2) > 0) {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block;background-color:#8cf35d; border-radius: 5px; font-size: 15px;">Grid Voltage: ${record.gridVoltage.toFixed(2)} V</span>`;
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 2px; margin: 10px; display: inline-block;background-color:#8cf35d; border-radius: 5px; font-size: 15px;">Grid Voltage: ${record.gridVoltage.toFixed(2)} V</span>`;
                                 } else {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px; color:#FFFFFF;">Grid Voltage is down: ${record.gridVoltage.toFixed(2)} V</span>`;
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 2px; margin: 10px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px;">Grid Voltage is down: ${record.gridVoltage.toFixed(2)} V</span>`;
                                 }
-
-
                                 if (record.batteryVoltage.toFixed(2) > 22) {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block; background-color:#8cf35d; border-radius: 5px; font-size: 15px;">Battery Voltage: ${record.batteryVoltage.toFixed(2)} V</span>`;
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 2px; margin: 10px; display: inline-block; background-color:#8cf35d; border-radius: 5px; font-size: 15px;">Battery Voltage: ${record.batteryVoltage.toFixed(2)} V</span>`;
                                 } else {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px; color:#FFFFFF;">Battery Voltage is down: ${record.batteryVoltage.toFixed(2)} V</span>`;
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 2px; margin: 10px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px;">Battery Voltage is down: ${record.batteryVoltage.toFixed(2)} V</span>`;
                                 }
-
+                                if (record.inverterCurrent.toFixed(2) > 4.5) {
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 2px; margin: 10px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px;">Inverter is overloaded: ${record.inverterCurrent.toFixed(2)} A</span>`;
+                                } else {
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 2px; margin: 10px; display: inline-block; background-color:#8cf35d; border-radius: 5px; font-size: 15px;">Inverter Current: ${record.inverterCurrent.toFixed(2)} A</span>`;
+                                }
                                 if ((record.solarVoltage * record.solarCurrent).toFixed(2) > 2) {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block;background-color:#8cf35d; border-radius: 5px; font-size: 15px;">Solar power: ${(record.solarVoltage * record.solarCurrent).toFixed(2)} W</span>`;
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 2px; margin: 10px; display: inline-block;background-color:#8cf35d; border-radius: 5px; font-size: 15px;">Solar power: ${(record.solarVoltage * record.solarCurrent).toFixed(2)} W</span>`;
                                 } else {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px; color:#FFFFFF;">Solar power is down: ${(record.solarVoltage * record.solarCurrent).toFixed(2)} W</span>`;
+                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 2px; margin: 10px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px;">Solar power is down: ${(record.solarVoltage * record.solarCurrent).toFixed(2)} W</span>`;
                                 }
-
-
-                                if ((record.inverterVoltage * record.inverterCurrent).toFixed(2) > 2) {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block;background-color:#8cf35d; border-radius: 5px; font-size: 15px;">Inverter power: ${(record.inverterVoltage * record.inverterCurrent).toFixed(2)} W</span>`;
-                                } else {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px; color:#FFFFFF;">Inverter power is down: ${(record.inverterVoltage * record.inverterCurrent).toFixed(2)} W</span>`;
-                                }
-
-                                if ((record.gridVoltage * record.gridCurrent ).toFixed(2) > 2) {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block;background-color:#8cf35d; border-radius: 5px; font-size: 15px;">Grid power: ${(record.gridVoltage * record.gridCurrent).toFixed(2)} W</span>`;
-                                } else {
-                                    additionalDataHTML += `<span style="border: 1px solid black; padding: 1px; margin: 5px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px;color:#FFFFFF;">Grid power is down: ${(record.gridVoltage * record.gridCurrent).toFixed(2)} W</span>`;
-                                }
-
-
                             } else {
                                 // If any of the values are undefined, handle it accordingly
-                                additionalDataHTML += `<span style="border: 1px solid black; padding: 2px; margin: 10px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px;color:#FFFFFF;">Data not available</span>`;
+                                additionalDataHTML += `<span style="border: 1px solid black; padding: 2px; margin: 10px; display: inline-block; background-color:#fc7266; border-radius: 5px; font-size: 15px;">Data not available</span>`;
                             }
                             additionalDataHTML += '</p>';
                             additionalDataDiv.innerHTML = additionalDataHTML;
@@ -348,18 +311,18 @@ function toggleAdditionalData(element) {
 let p1ValueTotArray = []; // Define p1ValueTotArray outside the function to make it accessible globally
 
 const datafull = async () => {
-    try {
-        let currentTimestamp = Math.floor(Date.now() / 1000);
-        const timestamp24HoursAgo = currentTimestamp - (24 * 60 * 60);
-        const uniValue = parseInt((new Date(caldate).getTime() / 1000).toFixed(0)) - 19800;
+    let currentTimestamp = Math.floor(Date.now() / 1000);
+    const timestamp24HoursAgo = currentTimestamp - (24 * 60 * 60);
+    const uniValue = parseInt((new Date(caldate).getTime() / 1000).toFixed(0)) - 19800;
 
-        p1ValueTotArray = []; // Reset p1ValueTotArray before populating it
+    p1ValueTotArray = []; // Reset p1ValueTotArray before populating it
 
-        const promises = mail.map(async (mailItem) => {
-            const mailSplit = mailItem.split("-")[0].trim(); // Extracting mail without space and hyphen
-            const databaseRef = ref(db, `data/${mailSplit}/timestamp`);
-            const queryRef = query(databaseRef, orderByKey(), startAt("" + timestamp24HoursAgo));
+    const promises = mail.map(async (mailItem) => {
+        const mailSplit = mailItem.split("-")[0].trim(); // Extracting mail without space and hyphen
+        const databaseRef = ref(db, `data/${mailSplit}/timestamp`);
+        const queryRef = query(databaseRef, orderByKey(), startAt("" + timestamp24HoursAgo));
 
+        try {
             const snapshot = await get(queryRef);
             const record = [];
             let k = 0;
@@ -380,28 +343,27 @@ const datafull = async () => {
                 setDateColor('#fc7266');
             }
 
-            return (p1ValueTot / 1000).toFixed(2);
-        });
+            p1ValueTotArray.push((p1ValueTot / 1000).toFixed(2));
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    });
 
-        const results = await Promise.all(promises);
+    await Promise.all(promises);
 
-        // Flatten the array of arrays into a single array
-        const flattenedArray = results.flat();
-
-        console.log("Flattened Array:", flattenedArray);
-
-        p1ValueTotArray = flattenedArray;
-
-        return flattenedArray;
-    } catch (error) {
-        console.error("Error fetching data:", error);
-        return null; // Return null in case of error
-    }
+    return p1ValueTotArray;
 }
 
-
 // Call datafull function
-// datafull().then(result => console.log("Result:", result));
+datafull()
+    .then((result) => {
+        // Now you can access p1ValueTotArray outside the function
+        // console.log(result);
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+    });
+
 
 
 

@@ -38,7 +38,7 @@ export default function Alart(props) {
     )}
 
       {/* Modal Start */}
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={show} onHide={handleClose} style={{border:'3px solid #17a2b8'}}>
         <Modal.Header >
           <Modal.Title>Device Checkup<i class="fa-solid fa-satellite-dish" style={{padding:'5px',fontSize:'35px'}}></i></Modal.Title>
         </Modal.Header>
